@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request; 
 
 Route::get('/', function () {
-    return view('layout-vertical-navbar');
+    return view('index');
 });
 
 Route::get('/page/{page}', function ($page) {
@@ -377,7 +377,6 @@ Route::post('/signup', function () {
 });
 
 Route::post('/login', function () {
-    
     include ("conn.blade.php");
 
     if(!$c){mysqli_close($c); 
@@ -386,10 +385,9 @@ Route::post('/login', function () {
     else
 	{
         $name = mysqli_real_escape_string ($c , trim($_POST["profilname"])) ;
-        $mail = mysqli_real_escape_string ($c , trim($_POST["profilmail"])) ;
         $pass = mysqli_real_escape_string ($c , $_POST["profilpass"] ) ;
 
-        $query="select * from users where name='".$name."' and pass = '".$pass."' and mail = '".$mail."' limit 1";
+        $query="select * from users where name='".$name."' and pass = '".$pass."' limit 1";
         $d = mysqli_query ($c, $query);
 		if(mysqli_num_rows($d)==1)
 		{
@@ -421,7 +419,7 @@ Route::post('/login', function () {
 		else
 		{
             mysqli_close($c);
-            return view('login_mobile', ['errorlogin'=>'Incorrect Name, Email or Password']);
+            return view('login', ['errorlogin'=>'Incorrect Name or Password']);
 		}
 	}
 });

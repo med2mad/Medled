@@ -1,0 +1,11 @@
+.burger-btn{
+    display:none !important;
+}
+
+
+@media only screen and (max-width: 1200px){
+
+    .burger-btn{
+        display:inline-block !important;
+    }
+        }

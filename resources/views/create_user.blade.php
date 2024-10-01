@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    <script src="assets/static/js/initTheme.js"></script>
+    <script src="/assets/static/js/initTheme.js"></script>
     <div id="auth">
         
 <div class="row h-100">
@@ -64,7 +64,7 @@
                 <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>
             </form>
             <div class="text-center mt-5 text-lg fs-4">
-                <p class='text-gray-600'>Already have an account? <a href="/page/login_mobile" class="font-bold">Log in</a>.</p>
+                <p class='text-gray-600'>Already have an account? <a href="/page/login" class="font-bold">Log in</a>.</p>
             </div>
         </div>
     </div>

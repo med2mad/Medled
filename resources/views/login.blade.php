@@ -12,11 +12,11 @@
     <link rel="stylesheet" href="/assets/compiled/css/auth.css">
     <style>
         .auth-left{
-            padding-top:0 !important;
+            padding-top: 0 !important;
         }
         .auth-logo{
             margin-bottom: 1rem !important;
-            text-align:center;
+            text-align: center;
         }
         .auth-logo img{
             height: 3rem !important;
@@ -25,7 +25,7 @@
 </head>
 
 <body>
-    <script src="assets/static/js/initTheme.js"></script>
+    <script src="/assets/static/js/initTheme.js"></script>
     <div id="auth">
         
 <div class="row h-100">
@@ -36,24 +36,19 @@
             </div>
             <h1 class="auth-title">Log in.</h1>
 
-            <form action="/">
+            <form action="/login" method="post">
+                @csrf
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="text" class="form-control form-control-xl" placeholder="Username">
+                    <input name="profilname" type="text" class="form-control form-control-xl" placeholder="username">
                     <div class="form-control-icon">
                         <i class="bi bi-person"></i>
                     </div>
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" class="form-control form-control-xl" placeholder="Password">
+                    <input name="profilpass" type="password" class="form-control form-control-xl" placeholder="password">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
-                </div>
-                <div class="form-check form-check-lg d-flex align-items-end">
-                    <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
-                    <label class="form-check-label text-gray-600" for="flexCheckDefault">
-                        Keep me logged in
-                    </label>
                 </div>
                 <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Log in</button>
             </form>
