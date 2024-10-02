@@ -1,4 +1,4 @@
-<?php if (session_id()=="") session_start(); ?>
+<?php if (session_id()=="") session_start();?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +23,7 @@
         }
         .sidebar-header{
             padding: 1rem !important;
-            background-color: #1e1e2d;
+            background-color: rgba(30, 30, 45, 0.2); /*1e1e2d */
         }
         .logo img{
             height: 3.2rem !important;
@@ -48,6 +48,18 @@
         .menu{
             margin-top:0 !important;
         }
+        #main-content{
+            padding-top:0 !important;
+        }
+        .avatar img{
+            object-fit: contain !important;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .userstatusactive{
+            background-color: #edfff6 !important;
+
+        }
+        
     </style>
 </head>
 

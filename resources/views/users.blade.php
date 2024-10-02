@@ -6,6 +6,7 @@
     }
 
     $name = isset($_GET["name"]) ? trim($_GET["name"]):''; //if research happend
+    $include = isset($_GET["include"]) && ($_GET["include"]=="on" ||  $_GET["include"]==1);
 ?>
 
 
@@ -24,9 +25,10 @@
 
 
 
-    <form method="get" class="form form-horizontal"> <input name="title" type="hidden" value="<?= $_GET["title"] ?>">
+    <form method="get" action="/page/users" class="form form-horizontal">
+        <input name="title" type="hidden" value="<?= $_GET["title"] ?>">
         <div class="form-body">
-            <div style="display:flex;">
+            <div style="display:flex;" class="mb-2">
                 <div class="form-group has-icon-left" style="margin-bottom:0;">
                     <div class="position-relative">
                         <input name="name" value="<?= $name ?>" type="text" class="form-control" placeholder="Name" id="first-name-horizontal-icon">
@@ -35,25 +37,24 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-flex">
+                <div>
                     <button type="submit" class="btn btn-primary">Search</button>
-                    <div style="margin-left:1rem;"><a class="btn btn-secondary" href="/page/users?title=<?= $_GET["title"] ?>&include=1" role="button">All</a></div>
                 </div>
             </div>
 
             <?php if($_GET["title"]=="Users") { ?>
             <div class="form-group">
-                <div class='form-check'>
+                <div class="form-check" style="padding-left:0;">
                     <div class="checkbox">
-                        <input type="checkbox" id="checkbox2" class='form-check-input' <?php if(isset($_GET["include"])){ ?> checked <?php } ?> >
-                        <label for="checkbox2">Include friends</label>
+                        <input name="include" type="checkbox" id="checkbox2" class="form-check-input" <?php if($include){ ?> checked <?php } ?> >
+                        <label for="checkbox2" style="padding-left:5px;" > Include friends</label>
                     </div>
                 </div>
             </div>
             <?php } ?>
         </div>
     </form>
-    
+    <?php $_SESSION["select"]='' ?>
 
                 <table class="table table-striped userstable" id="table1">
                     <tbody>
@@ -61,7 +62,7 @@
 
                         
 <?php include ("conn.blade.php");
-$q = "select id,name,img,mail,friends,blocked,type,status from users where id<>'".$_SESSION["id"]."'";
+$q = "select id,name,img,mail,friends,blocked,type,time from users where id<>'".$_SESSION["id"]."'";
 $q .= " AND name like '%".$name."%'";
 $d1 = mysqli_query ($c, $q." ORDER BY id DESC");
 
@@ -74,7 +75,7 @@ mysqli_close($c);
 while($r= mysqli_fetch_array ($d1))
 {
     $notShow = $_GET["title"]=="Friends" && !isset($MyfriendsArray[$r["id"]]); //in Friends page if not in friends list
-    $notShow = $notShow || $_GET["title"]=="Users" && isset($MyfriendsArray[$r["id"]]) && !isset($_GET["include"]); //in Users page if in friends list but include is not checked
+    $notShow = $notShow || $_GET["title"]=="Users" && isset($MyfriendsArray[$r["id"]]) && !$include; //in Users page if in friends list but include is not checked
     $notShow = $notShow || $r["blocked"]==1 && isset($_SESSION["type"]) && $_SESSION["type"]=="user"; //in users/friends pages if it's blocked and i'm not admin 
     if($notShow) continue;
 
@@ -89,16 +90,14 @@ while($r= mysqli_fetch_array ($d1))
 
 <tr>
     <td rowspan="2" width="120">
-        <img class="rounded" style="border:solid; object-fit:contain; background-color:black" src="/uploads/profiles/<?= $r["img"] ?>" width="100" height="100" alt="photo<?= $r["id"] ?>">
+        <img style="border:solid; object-fit:contain; background-color:black; border-radius:50%;" src="/uploads/profiles/<?= $r["img"] ?>" width="100" height="100" alt="photo<?= $r["id"] ?>">
     </td>
-    <td style="display:flex; justify-content:space-evenly; padding:15px 0;"><div><?= $r["name"] ?></div> <div><?= $r["mail"] ?></div></td>
+    <td style="padding:5px 0;"><?= $r["name"] ?> <br> <?= $r["mail"] ?></td>
     <?php if($_GET["title"]=="Friends") { ?>
-        <td rowspan="2">
-        <?php if($r["status"]=='active'){ ?>
-            <span class="badge bg-success">Active</span>
-        <?php }else{ ?>
-            <span class="badge bg-danger">Inactive</span>
-        <?php } ?>
+        <td id="<?= $r["id"] ?>" rowspan="2" class="activetd activetd<?= $r["id"] ?>">
+            <span id="active<?= $r["id"] ?>" class="badge bg-success">Active</span>
+            <span id="inactive<?= $r["id"] ?>" class="badge bg-light-secondary">Inactive</span>
+            <?php $_SESSION["select"] .= '&ids['.$r["id"].']=activetd'.$r["id"] ?>
         </td>
     <?php } ?>
 </tr>
@@ -126,22 +125,22 @@ while($r= mysqli_fetch_array ($d1))
 
         <?php if($_GET["title"]=="Users" && $imAdmin) { ?>
             <?php if($r["blocked"]==1) { ?>
-                <a href="/unblockuser?unblockuser=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
+                <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
             <?php }else{ ?>
-                <a href="/blockuser?blockuser=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+                <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
             <?php } ?>
         <?php } else if($_GET["title"]=="Friends") { ?>
             <?php if(isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1) { ?>
-                <a href="/unblockfriend?unblockfriend=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
+                <a href="/unblockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
             <?php }else{ ?>
-                <a href="/blockfriend?blockfriend=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+                <a href="/blockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
             <?php } ?>
         <?php } ?>
 
         <?php if(isset($MyfriendsArray[$r["id"]])) { ?>
-            <a href="/unfriend?unfriend=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&img=<?= $r["img"] ?>" class="btn btn-danger" style="border-radius:6px;" onclick="return confirm('Remove from Friends list ?');">Unfriend</a>
+            <a href="/unfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>&img=<?= $r["img"] ?>" class="btn btn-danger" style="border-radius:6px;" onclick="return confirm('Remove from Friends list ?');">Unfriend</a>
         <?php }else{ ?>
-            <a href="/befriend?befriend=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn btn-success" style="border-radius:6px;">Befriend</a>
+            <a href="/befriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>" class="btn btn-success" style="border-radius:6px;">Befriend</a>
         <?php } ?>
 
     </td>
@@ -158,6 +157,29 @@ while($r= mysqli_fetch_array ($d1))
     </section>
 </div>
 
-      
+    <script>
+
+        function beneath5Minutes(time) {
+            const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
+            const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+            return differenceInMinutes < 5;
+        }
+
+        function myFunction() {
+            fetch("/socket?o=o<?=$_SESSION["select"]?>").then(response => response.json())
+            .then(response=>{
+                for (var i = 0; i < response.length; i++) {
+                    let x=i;
+                    // if(beneath5Minutes(response[x].time)){
+                        document.getElementsByClassName('activetd'+response[x].id)[0].classList.add('active');
+                    // }
+                }
+            })
+        }
+        
+        myFunction();
+
+        // setInterval(myFunction, 300000);
+    </script>
 
 @include( 'partials.footer' )

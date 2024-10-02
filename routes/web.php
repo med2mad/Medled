@@ -125,7 +125,7 @@ Route::get('/deletegallery', function () {
         exit(mysqli_connect_error());
     }
     else{
-        mysqli_query ($c, "delete from gallery where id=" . $_GET["deletegallery"]) ;
+        mysqli_query ($c, "delete from gallery where id=" . $_GET["id"]) ;
         if(mysqli_affected_rows($c)<1){mysqli_close($c); return view("gallery");} 
         mysqli_close($c);
         unlink("uploads/gallery/".$_GET["img"]);
@@ -152,7 +152,7 @@ Route::get('/befriend', function () {
     
         $r= mysqli_fetch_array($d);
         $phpArray = json_decode($r["friends"], true);
-        $phpArray[$_GET["befriend"]] = 0;
+        $phpArray[$_GET["id"]] = 0;
 
         mysqli_query ($c, "update users set friends='".json_encode($phpArray)."' where id=" . $_SESSION["id"]) ;
         mysqli_close($c);
@@ -179,7 +179,7 @@ Route::get('/unfriend', function () {
     
         $r= mysqli_fetch_array($d);
         $phpArray = json_decode($r["friends"], true);
-        unset($phpArray[$_GET["unfriend"]]);
+        unset($phpArray[$_GET["id"]]);
 
         mysqli_query ($c, "update users set friends='".json_encode($phpArray)."' where id=" . $_SESSION["id"]) ;
         mysqli_close($c);
@@ -199,7 +199,7 @@ Route::get('/blockuser', function () {
         exit(mysqli_connect_error());
     }
     else{
-        mysqli_query ($c, "update users set blocked='1' where id=" . $_GET["blockuser"]) ;
+        mysqli_query ($c, "update users set blocked='1' where id=" . $_GET["id"]) ;
         mysqli_close($c);
         return view('users');
     }
@@ -217,7 +217,7 @@ Route::get('/unblockuser', function () {
         exit(mysqli_connect_error());
     }
     else{
-        mysqli_query ($c, "update users set blocked='0' where id=" . $_GET["unblockuser"]) ;
+        mysqli_query ($c, "update users set blocked='0' where id=" . $_GET["id"]) ;
         mysqli_close($c);
         return view('users');
     }
@@ -242,7 +242,7 @@ Route::get('/blockfriend', function () {
 
         $r= mysqli_fetch_array($d);
         $phpArray = json_decode($r["friends"], true);
-        $phpArray[$_GET["blockfriend"]]=1;
+        $phpArray[$_GET["id"]]=1;
 
         mysqli_query ($c, "update users set friends='".json_encode($phpArray)."' where id=" . $_SESSION["id"]) ;
         mysqli_close($c);
@@ -269,7 +269,7 @@ Route::get('/unblockfriend', function () {
 
         $r= mysqli_fetch_array($d);
         $phpArray = json_decode($r["friends"], true);
-        $phpArray[$_GET["unblockfriend"]]=0;
+        $phpArray[$_GET["id"]]=0;
 
         mysqli_query ($c, "update users set friends='".json_encode($phpArray)."' where id=" . $_SESSION["id"]) ;
         mysqli_close($c);
@@ -429,4 +429,28 @@ Route::get('/logout', function () {
     session_unset();
     session_destroy();
     return view('index');
+});
+
+Route::get('/socket', function(){
+    include ("conn.blade.php");
+
+    if (session_id()=="") session_start();
+    mysqli_query ($c, "update users set time=now() where id=" . $_SESSION["id"]);
+
+    $query = "select id,time from users where id IN (-1";
+    $ids = $request->input('ids');
+    $values = array_values($ids);
+    for ($i=0 ; $i<$values->length ; $i++) { 
+        $query .= ",".$values[$i];
+    }
+    $query .= ")";
+
+    $d = mysqli_query ($c, $query);
+    mysqli_close($c);
+    $friends[0]='';
+    while($r = mysqli_fetch_array($d)){
+        $friends[$r["id"]] = $r["time"];
+    }
+
+    return $friends;
 });

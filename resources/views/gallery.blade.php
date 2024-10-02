@@ -1,5 +1,10 @@
 @include( 'partials.header' )
 
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="imgModal">
+</div>
+
 <?php 
     // if (session_id()=="") session_start();
 
@@ -75,7 +80,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row gallery" data-bs-toggle="modal" data-bs-target="#galleryModal">
+                        <div class="row gallery" data-bs-toggle="modal" data-bs-target="#galleryModal" style="justify-content:space-evenly;">
                         <?php include ("conn.blade.php");
                         $query = "select * from gallery WHERE user = '". $_GET["user"] ."'";
                         if(isset($_GET["date1"]) && !empty($_GET["date1"])){
@@ -95,13 +100,11 @@
                             while($r= mysqli_fetch_array ($d))
                             { ?>
                                 <div class="col-6 col-sm-6 col-lg-3 mt-2 mt-md-0 mb-md-0 mb-2">
-                                    <a href="#">
-                                        <img class="w-100" data-bs-slide-to="<?=$i?>" src="/uploads/gallery/<?= $r["img"] ?>" width="100" height="200" data-bs-target="#Gallerycarousel">
-                                    </a>
+                                    <img style="width:200px; cursor:pointer; object-fit:contain; border:solid; background-color:black" class="w-100 gallery-img" data-bs-slide-to="<?=$i?>" src="/uploads/gallery/<?= $r["img"] ?>" width="100" height="200" data-bs-target="#Gallerycarousel">
                                     <div style="text-align:center;">
                                         <span class="no-click" ><?= date ( "d/m/Y" , strtotime($r["time"]) ) ?></span>
                                         <?php if(isset($_SESSION["id"]) && $_SESSION["id"]==$_GET["user"] || isset($_SESSION["type"]) && $_SESSION["type"]=="admin"){ ?>
-                                            <p><a class="btn btn-danger" href="/deletegallery?deletegallery=<?= $r["id"] ?>&user=<?= $_SESSION["id"] ?>&img=<?= $r["img"] ?>&page=<?= $currentpage ?>&perpage=<?= $perpage ?>" onclick="event.cancelBubble = true;return confirm('Delete this image ?');event.cancelBubble = true;">Delete</a></p>
+                                            <p><a class="btn btn-danger" href="/deletegallery?id=<?= $r["id"] ?>&user=<?= $_SESSION["id"] ?>&img=<?= $r["img"] ?>&page=<?= $currentpage ?>&perpage=<?= $perpage ?>" onclick="event.cancelBubble = true;return confirm('Delete this image ?');event.cancelBubble = true;">Delete</a></p>
                                         <?php } ?>
                                     </div>
                                 </div>
@@ -154,8 +157,8 @@
 <script type="text/javascript">
     let currentimg = 1;
     let poped = false;
-    next(0);
-    document.addEventListener("keydown", e=>{ if(e.key.toLowerCase()==="arrowleft")next(-1);if(e.key.toLowerCase()==="arrowright")next(1);if(e.key.toLowerCase()==="escape")popupremove();})
+    // next(0);
+    // document.addEventListener("keydown", e=>{ if(e.key.toLowerCase()==="arrowleft")next(-1);if(e.key.toLowerCase()==="arrowright")next(1);if(e.key.toLowerCase()==="escape")popupremove();})
     
     <?php if(isset($_GET["last"])){?> 
         currentimg = perpage;
@@ -166,6 +169,32 @@
     function refresh(){
         const perpage = document.getElementById("perpage").value;
         if(perpage!=0){ window.location.href = "/page/gallery?user=<?= $_GET["user"] ?>&perpage=" + perpage + "<?= $date1.$date2 ?>#ppp"; }
+    }
+
+
+    var modal = document.getElementById('myModal');
+    var img = document.getElementById('image1');
+    var modalImg = document.getElementById('imgModal');
+
+    var images = document.getElementsByClassName('gallery-img');
+    for (var i = 0; i < images.length; i++) {
+        images[i].onclick = function() {
+            modal.style.display = 'flex';
+            modalImg.src = this.src;  // Set the clicked image as the modal image
+        }
+    }
+
+    //<span> element that closes the modal
+    var closeSpan = document.getElementsByClassName('close')[0];
+    closeSpan.onclick = function() {
+        modal.style.display = 'none';
+    }
+
+    // Optional: Close the modal when clicking outside of the modal content
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
     }
 </script>
 
