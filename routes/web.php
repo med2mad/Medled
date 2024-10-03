@@ -79,7 +79,6 @@ Route::get('/deletepost', function () {
 });
 
 Route::post('/create_gallery', function () {
-    $text = trim($_POST["text"]);
     $newimgname = "";
     $filecount = count($_FILES["img"]["name"]);
     
@@ -99,9 +98,8 @@ Route::post('/create_gallery', function () {
         }
     
         include ("conn.blade.php");
-        $text = mysqli_real_escape_string($c , $text) ;
         if (session_id()=="") session_start();
-        $query="insert into gallery(img, time, text, user)values('".$newimgname."', now(), '". $text."', '". $_SESSION["id"] ."')";
+        $query="insert into gallery(img, time, text, user)values('".$newimgname."', now(), '', '". $_SESSION["id"] ."')";
         mysqli_query($c, $query);
         mysqli_close($c);
     }
@@ -431,26 +429,22 @@ Route::get('/logout', function () {
     return view('index');
 });
 
-Route::get('/socket', function(){
+Route::get('/gettimes', function(Request $request){
     include ("conn.blade.php");
-
-    if (session_id()=="") session_start();
-    mysqli_query ($c, "update users set time=now() where id=" . $_SESSION["id"]);
-
-    $query = "select id,time from users where id IN (-1";
-    $ids = $request->input('ids');
-    $values = array_values($ids);
-    for ($i=0 ; $i<$values->length ; $i++) { 
-        $query .= ",".$values[$i];
-    }
-    $query .= ")";
-
-    $d = mysqli_query ($c, $query);
+    $d = mysqli_query ($c, "select id,time from users where id IN (-1".$request->input('q').")");
     mysqli_close($c);
-    $friends[0]='';
+    $friends = [];
     while($r = mysqli_fetch_array($d)){
         $friends[$r["id"]] = $r["time"];
     }
 
     return $friends;
+});
+
+Route::get('/updatetime', function(){
+    include ("conn.blade.php");
+    if (session_id()=="") session_start();
+    mysqli_query ($c, "update users set time=now() where id=" . $_SESSION["id"]);
+    mysqli_close($c);
+    return '[]';
 });

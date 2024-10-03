@@ -1,13 +1,9 @@
 .burger-btn{
     display:none !important;
 }
-
-.active{
-    background-color: #edfff6 !important;
-
+.page-link{
+    cursor: pointer;
 }
-
-
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
@@ -24,12 +20,13 @@
 
 /* Modal Content (Image) */
 .modal-content {
-    margin: auto;
-    display: block;
-    max-width: 80%;
-    max-height: 100%;
-    align-items: center;
-    justify-items: center;
+    width: auto !important;
+    height: auto !important;
+    max-width: 80% !important; /* prevents the image from exceeding its container's width */
+    max-height: 80% !important;
+    margin: auto !important;
+    align-items: center !important;
+    justify-items: center !important;
 }
 
 /* Close button (X) */

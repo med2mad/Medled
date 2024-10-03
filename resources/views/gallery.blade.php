@@ -65,21 +65,24 @@
     else{
         $currentpage = 1;
     }
+
+    $name = "My ";
+    if(isset($_GET["name"]) && $_GET["name"]!='') {$name = $_GET["name"].' ';}
 ?>
 
 <div class="page-heading" style="margin-bottom:0;">
     <div class="page-title">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
-                <h3>Gallery</h3>
+                <h3><?= $name ?> Gallery</h3>
             </div>
         </div>
     </div>
     <section class="section">
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
+                <div class="card mb-1">
+                    <div class="card-body pb-1">
                         <div class="row gallery" data-bs-toggle="modal" data-bs-target="#galleryModal" style="justify-content:space-evenly;">
                         <?php include ("conn.blade.php");
                         $query = "select * from gallery WHERE user = '". $_GET["user"] ."'";
@@ -97,14 +100,16 @@
                             <p style="text-align:center;">No Media !</p>
                         <?php }else{
                             $i=0;
-                            while($r= mysqli_fetch_array ($d))
+                            while($r= mysqli_fetch_array($d))
                             { ?>
                                 <div class="col-6 col-sm-6 col-lg-3 mt-2 mt-md-0 mb-md-0 mb-2">
                                     <img style="width:200px; cursor:pointer; object-fit:contain; border:solid; background-color:black" class="w-100 gallery-img" data-bs-slide-to="<?=$i?>" src="/uploads/gallery/<?= $r["img"] ?>" width="100" height="200" data-bs-target="#Gallerycarousel">
                                     <div style="text-align:center;">
                                         <span class="no-click" ><?= date ( "d/m/Y" , strtotime($r["time"]) ) ?></span>
                                         <?php if(isset($_SESSION["id"]) && $_SESSION["id"]==$_GET["user"] || isset($_SESSION["type"]) && $_SESSION["type"]=="admin"){ ?>
-                                            <p><a class="btn btn-danger" href="/deletegallery?id=<?= $r["id"] ?>&user=<?= $_SESSION["id"] ?>&img=<?= $r["img"] ?>&page=<?= $currentpage ?>&perpage=<?= $perpage ?>" onclick="event.cancelBubble = true;return confirm('Delete this image ?');event.cancelBubble = true;">Delete</a></p>
+                                            <div class="mb-2">
+                                                <a class="btn btn-danger" href="/deletegallery?id=<?= $r["id"] ?>&user=<?= $_SESSION["id"] ?>&name=<?= $name ?>&img=<?= $r["img"] ?>&page=<?= $currentpage ?>&perpage=<?= $perpage ?>" onclick="event.cancelBubble = true;return confirm('Delete this image ?');event.cancelBubble = true;">Delete</a>
+                                            </div>
                                         <?php } ?>
                                     </div>
                                 </div>
@@ -118,41 +123,58 @@
 </div>
 
 
-<p id="ppp" class="pagenum" style="text-align: center;">
-    <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=1&perpage=<?= $perpage ?><?= $date1.$date2 ?>#ppp"> &nbsp; << &nbsp; </a> <?php
+<div class="pagenum" style="text-align: center;">
+    <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=1&name=<?= $name ?>&perpage=<?= $perpage ?><?= $date1.$date2 ?>"> &nbsp; << &nbsp; </a> <?php
     for ($i=1; $i<=$pagesnbr; $i++){ 
         if($currentpage!=$i){?>
-            <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=<?= $i ?>&perpage=<?= $perpage ?><?= $date1.$date2 ?>#ppp"> &nbsp; <?= $i ?> &nbsp; </a>
+            <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=<?= $i ?>&name=<?= $name ?>&perpage=<?= $perpage ?><?= $date1.$date2 ?>"> &nbsp; <?= $i ?> &nbsp; </a>
         <?php }else{ ?>
             &nbsp; <?= $i ?> &nbsp; 
     <?php }}?> 
-    <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=<?= $pagesnbr ?>&perpage=<?= $perpage ?><?= $date1.$date2 ?>&last=yes#ppp"> &nbsp; >> &nbsp; </a>
-</p>
+    <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=<?= $pagesnbr ?>&name=<?= $name ?>&perpage=<?= $perpage ?><?= $date1.$date2 ?>&last=yes"> &nbsp; >> &nbsp; </a>
+</div>
 
-<div style="display:flex;flex-wrap: wrap;justify-content: space-between" class="pb-2 pt-0">
+<div class="pb-4 pt-0" style="display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between">
     <div>
-        <nobr>
-            Images per page : 
-            <select id="perpage" onchange="refresh()">
-                <option value ="4" <?php if($perpage==4) {echo "selected";} ?> >4</option>
-                <option value="8" <?php if($perpage==8){echo "selected";} ?> >8</option>
-                <option value="12" <?php if($perpage==12){echo "selected";} ?> >12</option>
-                <option value="16" <?php if($perpage==16){echo "selected";} ?> >16</option>
-                <option value="30" <?php if($perpage==30){echo "selected";} ?> >30</option>
-            </select>
-        </nobr>
+        Per page : 
+        <select id="perpage" onchange="refresh()" class="form-control" style="width:100px; display:inline;">
+            <option value ="4" <?php if($perpage==4) {echo "selected";} ?> >4</option>
+            <option value="8" <?php if($perpage==8){echo "selected";} ?> >8</option>
+            <option value="12" <?php if($perpage==12){echo "selected";} ?> >12</option>
+            <option value="16" <?php if($perpage==16){echo "selected";} ?> >16</option>
+            <option value="30" <?php if($perpage==30){echo "selected";} ?> >30</option>
+        </select> 
     </div>
 
-    <div> <nobr>
-        <form method="get" action="/page/gallery#ppp">
-        From : <input type="date" name="date1" id="date1" value = "<?= $defdate1 ?>">
-        To : <input type="date" name="date2" id="date2" value = "<?= $defdate2 ?>">
-        <input type="hidden" name="user" value = "<?= $_GET["user"] ?>">
-        <input type="submit" class="btn btn-secondary" value="Filter">
-        </form></nobr>
+    <div>
+        <form method="get" action="/page/gallery" style="display:flex; align-items:center; flex-wrap:wrap;">
+        <div style="text-align:right">From : </div><div><input type="date" name="date1" id="date1" value="<?= $defdate1 ?>" class="form-control"></div>
+        <div style="width:50px;text-align:right"> - To : </div><div><input type="date" name="date2" id="date2" value="<?= $defdate2 ?>" class="form-control"></div>
+        <div style="width:20px;text-align:right"><input type="hidden" name="user" value = "<?= $_GET["user"] ?>"></div>
+        <input type="hidden" name="name" value = "<?= $name ?>">
+        <div><input type="submit" class="btn btn-secondary" value="Filter" class="form-control"></div>
+        </form>
     </div>
 </div>
 
+<?php if($_GET["user"] == $_SESSION["id"]) { ?>
+<div>
+    <div class="card">
+        <div class="card-header pb-0">
+            <h5 class="card-title">Add to gallery</h5>
+        </div>
+        <div class="card-content">
+            <div class="card-body pt-0">
+                <form method="post" action="/create_gallery?user=<?= $_SESSION["id"] ?>" enctype="multipart/form-data">
+                    @csrf
+                    <input type="file" name="img[]" class="multiple-files-filepond" multiple>
+                    <button type="submit" class="btn btn-primary" value="upload">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<?php } ?>
 
 <script type="text/javascript">
     let currentimg = 1;
@@ -168,7 +190,7 @@
 
     function refresh(){
         const perpage = document.getElementById("perpage").value;
-        if(perpage!=0){ window.location.href = "/page/gallery?user=<?= $_GET["user"] ?>&perpage=" + perpage + "<?= $date1.$date2 ?>#ppp"; }
+        if(perpage!=0){ window.location.href = "/page/gallery?user=<?= $_GET["user"] ?>&name=<?= $name ?>&perpage=" + perpage + "<?= $date1.$date2 ?>"; }
     }
 
 
@@ -197,6 +219,18 @@
         }
     }
 </script>
+
+
+<script src="/assets/extensions/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-filter/filepond-plugin-image-filter.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
+<script src="/assets/extensions/filepond/filepond.js"></script>
+<script src="/assets/extensions/toastify-js/src/toastify.js"></script>
+<script src="/assets/static/js/pages/filepond.js"></script>
 
 
 @include( 'partials.footer' )
