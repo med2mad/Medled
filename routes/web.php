@@ -11,16 +11,13 @@ Route::get('/page/{page}', function ($page) {
     return view($page);
 });
 
-Route::post('/post', function () {
-    if(!strlen($_POST["id_r"]) || !is_numeric($_POST["id_r"])){
-        exit("404 id");
-    }
-    if (mb_strlen($_POST["message"],"UTF-8") > 500) {
-        exit("404 message to 500");
-    }
+Route::post('/posts', function () {
+    return view('posts');
+});
 
+Route::post('/post', function () {
     $message = trim($_POST["message"]);
-    if(!strlen($message) && empty($_FILES["file"]["name"])){
+    if(!strlen($message)){
         return view('posts');
     }
     
@@ -29,8 +26,8 @@ Route::post('/post', function () {
         mysqli_close($c); exit(mysqli_connect_error());
     }
 
-    $id_r = mysqli_real_escape_string ($c , $_POST["id_r"]) ;
-    $d = mysqli_query ($c, "select name,mail,img from users where id = '".$id_r."'");
+    $friend = mysqli_real_escape_string ($c , $_POST["friend"]) ;
+    $d = mysqli_query ($c, "select name,mail,img from users where id = '".$friend."'");
     if(mysqli_num_rows($d)!=1){
         exit("404 post");
     }
@@ -44,19 +41,11 @@ Route::post('/post', function () {
     $mail_r = mysqli_real_escape_string ($c , $r["mail"]) ;
     $img_r = mysqli_real_escape_string ($c , $r["img"]) ;
 
-    $newfilename ="" ;
-    if(isset($_FILES["file"]) && $_FILES["file"]["error"]===0){
-        $name=pathinfo($_FILES["file"]["name"], PATHINFO_FILENAME);
-        $ext= pathinfo($_FILES["file"]["name"], PATHINFO_EXTENSION);
-        $newfilename=$name."_".rand(1000, 9999).".".$ext;
-        move_uploaded_file($_FILES["file"]["tmp_name"], "/uploads/posts/".$newfilename);
-    }
-
     $query="insert into posts(message,file,users_id_w,users_name_w,users_mail_w,users_img_w,users_id_r,users_name_r,users_mail_r,users_img_r)
-                        values('".$message."','".$newfilename."','".$_SESSION["id"]."','".$name_w."','".$mail_w."','".$_SESSION["photo"]."','".$id_r."','".$name_r."','".$mail_r."','".$img_r."')";
+                        values('".$message."','','".$_SESSION["id"]."','".$name_w."','".$mail_w."','".$_SESSION["photo"]."','".$friend."','".$name_r."','".$mail_r."','".$img_r."')";
     mysqli_query ($c, $query);
     mysqli_close($c);
-    return view('posts');
+    return ["message"=>$message];
 });
 
 Route::get('/deletepost', function () {

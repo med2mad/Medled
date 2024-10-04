@@ -1,9 +1,25 @@
 .burger-btn{
     display:none !important;
 }
+
 .page-link{
     cursor: pointer;
 }
+
+.chatbtn{
+    background: linear-gradient(to right, #3ed163, #1a5f2a) !important;
+    border-radius:50% !important;
+    padding:15px !important;
+    border: none !important;
+}
+.chatbtn:hover{
+    background: linear-gradient(to right, #7ddb94, #40754c) !important;
+}
+.chatbtn:active{
+    transform: scale(0.90) !important;
+}
+
+
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */

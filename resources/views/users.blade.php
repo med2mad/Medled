@@ -169,10 +169,6 @@ mysqli_close($c);
 
 while($r= mysqli_fetch_array ($d1))
 { 
-    // $notShow = $_GET["title"]=="Users" && isset($MyfriendsArray[$r["id"]]) && !$include; //Users page: is friend and include is not checked
-    // $notShow = $notShow || $r["blocked"]==1 && isset($_SESSION["type"]) && $_SESSION["type"]=="user"; //users/friends pages: blocked by admin and i'm not admin 
-    // if($notShow) continue;
-
     $name = htmlspecialchars($r["name"]);
     $mail = htmlspecialchars($r["mail"]);
     $colorRed = $_GET["title"]=="Friends" && isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1 || $r["blocked"]==1 ? 'bg-danger bg-gradient' : '';
@@ -190,8 +186,12 @@ while($r= mysqli_fetch_array ($d1))
         <?= $name.($r['type']=='admin'?' (Admin)':'') ?> <br> <?= $mail ?>
     </td>
     <?php if($_GET["title"]=="Friends") { ?>
-        <td rowspan="2" class="activetd" id="activetd<?= $r["id"] ?>">
-            <span id="active<?= $r["id"] ?>" style="display:none" class="badge bg-success">Active</span>
+        <td rowspan="2" class="activetd" id="activetd<?= $r["id"] ?>" width="120">
+            <form action="/posts" method="post" style="display:none" id="active<?= $r["id"] ?>">
+                @csrf
+                <input type="hidden" name="friend" value="<?= $r["id"] ?>">
+                <button type="submit" class="btn btn-success chatbtn">Chat<br>Room</button> 
+            </form>
             <span id="inactive<?= $r["id"] ?>" style="display:none" class="badge bg-light-secondary">Inactive</span>
             <?php $_SESSION["select"] .= ','.$r["id"] ?>
         </td>
@@ -291,7 +291,7 @@ while($r= mysqli_fetch_array ($d1))
             fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
             .then(response=>{
                 for (let key in response) {
-                    if(beneath1Minute(response[key])){
+                    if(true || beneath1Minute(response[key])){
                         document.getElementById('activetd'+key).style.backgroundColor='#edfff6';
                         document.getElementById('active'+key).style.display='';
                         document.getElementById('inactive'+key).style.display='none';
