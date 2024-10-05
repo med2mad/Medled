@@ -186,7 +186,7 @@ while($r= mysqli_fetch_array ($d1))
         <?= $name.($r['type']=='admin'?' (Admin)':'') ?> <br> <?= $mail ?>
     </td>
     <?php if($_GET["title"]=="Friends") { ?>
-        <td rowspan="2" class="activetd" id="activetd<?= $r["id"] ?>" width="120">
+        <td rowspan="2" id="activetd<?= $r["id"] ?>" width="120">
             <form action="/posts" method="post" style="display:none" id="active<?= $r["id"] ?>">
                 @csrf
                 <input type="hidden" name="friend" value="<?= $r["id"] ?>">
@@ -281,23 +281,23 @@ while($r= mysqli_fetch_array ($d1))
 <?php if($_GET["title"]=="Friends") { ?> <!-- track if user still active -->
 
     <script>
-        function beneath1Minute(time) {
+        function timeDifference(time) {
             const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
             const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
-            return differenceInMinutes < 1;
+            return differenceInMinutes;
         }
 
         function myFunction() {
             fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
             .then(response=>{
                 for (let key in response) {
-                    if(true || beneath1Minute(response[key])){
-                        document.getElementById('activetd'+key).style.backgroundColor='#edfff6';
+                    if(true || timeDifference(response[key]) < 1){
+                        document.getElementById('activetd'+key).classList.add('activetd');
                         document.getElementById('active'+key).style.display='';
                         document.getElementById('inactive'+key).style.display='none';
                     }
                     else{
-                        document.getElementById('activetd'+key).style.backgroundColor='';
+                        document.getElementById('activetd'+key).classList.remove("activetd");
                         document.getElementById('active'+key).style.display='none';
                         document.getElementById('inactive'+key).style.display='';
                     }

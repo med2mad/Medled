@@ -12,8 +12,13 @@ Route::get('/page/{page}', function ($page) {
 });
 
 Route::post('/posts', function () {
-    return view('posts');
+    $x = 10;
+    if(isset($_POST["perpage"])) {$x=$_POST["perpage"];}
+    return redirect()->route('routename')->with('friend', $_POST["friend"])->with('perpage', $x);
 });
+Route::get('/form-success', function(){
+    return view('posts', ["friend"=>session('friend'), "perpage"=>session('perpage')]);
+})->name('routename');
 
 Route::post('/post', function () {
     $message = trim($_POST["message"]);
