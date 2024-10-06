@@ -1,7 +1,9 @@
 @include( 'partials.header' )
 <?php
     // if (session_id()=="") session_start();
-    if(isset($friend) && $friend!=''){$_SESSION["friend"]=$friend;}
+    if((!isset($_SESSION["friendId"]) || $_SESSION["friendId"]=='') && (!isset($friend) || $friend==''))
+    { echo '<script>window.location.href = "/page/users?title=Friends";</script>'; exit;}
+    if(isset($friend) && $friend!=''){$_SESSION["friendId"]=$friend;}
     if(isset($perpage) && $perpage!=''){ $_SESSION["perpage"]=$perpage; }
     else{$_SESSION["perpage"]=10;}
     
@@ -37,7 +39,7 @@
 <div class="card-body messagesCard" style="padding:10px;">
 <form id="perpageform" method="post" action="/posts" class="form form-horizontal">
     @csrf
-    <input name="friend" type="hidden" value=<?=$_SESSION["friend"]?> >
+    <input name="friend" type="hidden" value=<?=$_SESSION["friendId"]?> >
     <div class="form-body">
         <div style="width:150px; display:flex; align-items:flex-end; margin:auto; ">
             <nobr>Show last</nobr>
@@ -60,16 +62,19 @@
         <div id="messages" class="card-body py-3 messagesCard">
 
 <?php include ("conn.blade.php");
-$q = "select users_id_w, users_name_w, users_img_w, message from posts where (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friend"]." OR users_id_r = ".$_SESSION["friend"].")";
-$d1 = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
+$q = "select users_id_w, users_name_w, users_img_w, message from posts where (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
+$d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
 mysqli_close($c);
-$y=-1; $messages=[];
-while($r= mysqli_fetch_array($d1))
-{ $y++;
+
+if(mysqli_num_rows($d)==0){?>
+    <p style="text-align:center; margin-bottom:0;">No Conversations !</p>
+<?php  }else{
+while($r= mysqli_fetch_array($d))
+{
     $id = $r["users_id_w"];
     $img = $r["users_img_w"];
     $name = htmlspecialchars($r["users_name_w"]);
-    $messages = $r["message"];
+    $message = $r["message"];
 ?>
 
 <div class="messagerow p-2" style="justify-content:<?= $_SESSION["id"]==$id ? 'flex-start':'flex-end'?>">
@@ -79,7 +84,7 @@ while($r= mysqli_fetch_array($d1))
     </div>
 <?php } ?>
     <div style="padding:5px 0;">
-        <div class="oldmessage" style="background-color:<?= $_SESSION["id"]==$id ? 'rgba(199, 255, 206)':'white'?>"><?= $messages ?></div>
+        <div class="oldmessage" style="background-color:<?= $_SESSION["id"]==$id ? 'rgba(199, 255, 206)':'white'?>"><?= $message ?></div>
     </div>
 <?php if($_SESSION["id"]!=$id) { ?>
     <div width="120">
@@ -88,7 +93,7 @@ while($r= mysqli_fetch_array($d1))
 <?php } ?>
 </div>
 
-<?php } ?>
+<?php }} ?>
 
             </div>
         </div>
@@ -111,8 +116,8 @@ while($r= mysqli_fetch_array($d1))
         plugins: [
           'lists','link','emoticons',
         ],
-        toolbar:'fontsize | bold underline forecolor backcolor emoticons | ' 
-                + 'bullist numlist checklist | link',
+        toolbar:'fontsize | bold underline forecolor backcolor | ' 
+                + 'bullist numlist checklist | emoticons ',
         font_size_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt',
         menubar: false,
         height: 220, 
@@ -120,8 +125,19 @@ while($r= mysqli_fetch_array($d1))
     });
 </script>
 
-<div id="sourcediv" style="display:none;">
+<div id="sourcediv1" style="display:none;">
     <div class="messagerow p-2" style="justify-content:flex-start;">
+        <div width="120">
+            <img class="photo" src="/uploads/profiles/<?= $_SESSION["photo"] ?>" width="100" height="100" alt="photo<?= $_SESSION["id"] ?>">
+        </div>
+        <div style="padding:5px 0;">
+            <div class="newmessage oldmessage" style="background-color:rgba(199, 255, 206);"></div>
+        </div>
+    </div>
+</div>
+
+<div id="sourcediv2" style="display:none;">
+    <div class="messagerow p-2" style="justify-content:flex-end;">
         <div width="120">
             <img class="photo" src="/uploads/profiles/<?= $_SESSION["photo"] ?>" width="100" height="100" alt="photo<?= $_SESSION["id"] ?>">
         </div>
@@ -139,14 +155,14 @@ while($r= mysqli_fetch_array($d1))
         const messageContent = tinymce.get('message1').getContent();
         const csrfToken = document.querySelector('input[name="_token"]').value;
         formData.append('message', messageContent);
-        formData.append('friend', <?= $_SESSION["friend"] ?>);
+        formData.append('friendId', <?= $_SESSION["friendId"] ?>);
         formData.append('_token', csrfToken);
         fetch('/post', { method:'POST', body:formData })
         .then(response => response.json())
         .then(data => {
             const newDiv = document.createElement("div");
-            const sourceDiv = document.getElementById("sourcediv");
-            newDiv.innerHTML = sourceDiv.innerHTML;
+            const sourceDiv1 = document.getElementById("sourcediv1");
+            newDiv.innerHTML = sourceDiv1.innerHTML;
             const newTextarea = newDiv.querySelector(".newmessage");
             newTextarea.innerHTML = messageContent;
             document.getElementById("messages").prepend(newDiv);
@@ -154,6 +170,25 @@ while($r= mysqli_fetch_array($d1))
         })
     });
 
+</script>
+
+
+<script>
+    function myFunction() {
+        fetch("/getmessages?friendId=<?=$_SESSION["friendId"]?>").then(response => response.json())
+        .then(messages=>{
+            for (let id in messages) {
+                const newDiv = document.createElement("div");
+                const sourceDiv2 = document.getElementById("sourcediv2");
+                newDiv.innerHTML = sourceDiv2.innerHTML;
+                const newTextarea = newDiv.querySelector(".newmessage");
+                newTextarea.innerHTML = messages[id];
+                document.getElementById("messages").prepend(newDiv);
+            }
+        })
+    }
+
+    setInterval(myFunction, 5000); //every minute
 </script>
 
 @include( 'partials.footer' )

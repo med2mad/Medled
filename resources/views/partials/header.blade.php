@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedLed Social</title>
     <link rel="shortcut icon" href="/assets/compiled/png/favicon.png" type="image/png">
@@ -37,12 +38,7 @@
             align-items: center;
             gap: 10px;
         }
-        .userstable{
-            margin-top:1rem;
-        }
-        .userstable th, .userstable td{
-            text-align:center;
-        }
+
         .form-check-input{
             margin: 0 !important;
         }
@@ -117,8 +113,8 @@
 
             <li class="sidebar-item  ">
                 <a href="/page/posts" class='sidebar-link'>
-                    <i class='bi bi-envelope-fill'></i>
-                    <span>Posts</span>
+                    <i class="bi bi-chat-dots-fill"></i>
+                    <span>Last Conversation</span>
                 </a>
             </li>
 

@@ -14,7 +14,7 @@ Route::get('/page/{page}', function ($page) {
 Route::post('/posts', function () {
     $x = 10;
     if(isset($_POST["perpage"])) {$x=$_POST["perpage"];}
-    return redirect()->route('routename')->with('friend', $_POST["friend"])->with('perpage', $x);
+    return redirect()->route('routename')->with('friend', $_POST["friend"])->with('perpage', $x)->with('photo', );
 });
 Route::get('/form-success', function(){
     return view('posts', ["friend"=>session('friend'), "perpage"=>session('perpage')]);
@@ -31,7 +31,7 @@ Route::post('/post', function () {
         mysqli_close($c); exit(mysqli_connect_error());
     }
 
-    $friend = mysqli_real_escape_string ($c , $_POST["friend"]) ;
+    $friend = mysqli_real_escape_string ($c , $_POST["friendId"]) ;
     $d = mysqli_query ($c, "select name,mail,img from users where id = '".$friend."'");
     if(mysqli_num_rows($d)!=1){
         exit("404 post");
@@ -433,6 +433,20 @@ Route::get('/gettimes', function(Request $request){
     }
 
     return $friends;
+});
+
+Route::get('/getmessages', function(Request $request){
+    include ("conn.blade.php");
+    $q = "select id,message from posts where red = 0 and users_id_w = " . $request->input('friendId') ." ORDER BY id DESC";
+    $d = mysqli_query ($c, $q);
+    $messages = [];
+    while($r = mysqli_fetch_array($d)){
+        $messages[$r["id"]] = $r["message"];
+    }
+
+    mysqli_query ($c, "update posts set red=1 where users_id_w=" . $request->input('friendId')) ;
+    mysqli_close($c);
+    return $messages;
 });
 
 Route::get('/updatetime', function(){

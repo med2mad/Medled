@@ -140,8 +140,7 @@ else{
 </nav>
 
 
-                <table class="table table-striped userstable" id="table1">
-                    <tbody>
+<div class="userstable">
 
 
                         
@@ -178,75 +177,79 @@ while($r= mysqli_fetch_array ($d1))
         $is_friend_not_blocking_me = isset($user_friends[$_SESSION["id"]]) ? $user_friends[$_SESSION["id"]]==0:true;
 ?>
 
-<tr>
-    <td rowspan="2" width="120">
+<div class="userrow" id="userrow<?= $r["id"] ?>">
+
+    <div style="width:120px;" id="avatar<?= $r["id"] ?>">
         <img style="border:solid; object-fit:contain; background-color:black; border-radius:50%;" src="/uploads/profiles/<?= $r["img"] ?>" width="100" height="100" alt="photo<?= $r["id"] ?>">
-    </td>
-    <td style="padding:5px 0;">
-        <?= $name.($r['type']=='admin'?' (Admin)':'') ?> <br> <?= $mail ?>
-    </td>
-    <?php if($_GET["title"]=="Friends") { ?>
-        <td rowspan="2" id="activetd<?= $r["id"] ?>" width="120">
-            <form action="/posts" method="post" style="display:none" id="active<?= $r["id"] ?>">
-                @csrf
-                <input type="hidden" name="friend" value="<?= $r["id"] ?>">
-                <button type="submit" class="btn btn-success chatbtn">Chat<br>Room</button> 
-            </form>
-            <span id="inactive<?= $r["id"] ?>" style="display:none" class="badge bg-light-secondary">Inactive</span>
-            <?php $_SESSION["select"] .= ','.$r["id"] ?>
-        </td>
-    <?php } ?>
-</tr>
-<tr style="border-bottom:solid;">
-    <td>
-        <?php if(($_GET["title"]=="Friends") || $imAdmin) { ?>
-            <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?>
-                <a class="btn btn-primary" style="border-radius:6px;" href="/page/create_post?id_r=<?=$r["id"]?>&name_r=<?=$username?>">Post</a> | 
-            <?php }else{ ?>
-                <a class="btn btn-secondary disabled" style="border-radius:6px;">Post</a> | 
+    </div>
+    <div style="flex-grow:1;">
+        <div style="height:65px; display:flex; align-items:center;justify-content:center;">
+            <div><?= $name.($r['type']=='admin'?' (Admin)':'') ?> <br>
+            <?php if($_GET["title"]=="Friends") { ?>
+                <span id="active<?= $r["id"] ?>" style="display:none;" class="badge bg-success">Active</span>
+                <span id="inactive<?= $r["id"] ?>" style="display:none;" class="badge bg-light-secondary">Inactive</span>
+            <?php } ?></div> 
+        </div>
+        <div class="friendbtns" style="height:60px;">
+            <?php if(($_GET["title"]=="Friends") || $imAdmin) { ?>
+                <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?>
+                    <a class="btn btn-primary" style="border-radius:6px;" href="/page/create_post?id_r=<?=$r["id"]?>&name_r=<?=$username?>">Post</a> | 
+                <?php }else{ ?>
+                    <a class="btn btn-secondary disabled" style="border-radius:6px;">Post</a> | 
+                <?php } ?>
             <?php } ?>
-        <?php } ?>
-        
-        <?php if($_GET["title"]=="Friends" || $imAdmin) { ?>
-            <a class="btn btn-success" href="/page/posts?name=<?=$username?>" style="border-radius:6px;">All Posts</a> | 
-        <?php } ?>
-        
-        <?php if(($_GET["title"]=="Friends") || $imAdmin) { ?>
-            <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?>
-                <a class="btn btn-warning" href="/page/gallery?user=<?= $r["id"] ?>&name=<?= $r["name"] ?>" style="border-radius:6px;">Gallery</a> | 
-            <?php }else{ ?>
-                <a class="btn btn-secondary disabled" style="border-radius:6px;">Gallery</a> | 
+            
+            <?php if($_GET["title"]=="Friends" || $imAdmin) { ?>
+                <a class="btn btn-success" href="/page/posts?name=<?=$username?>" style="border-radius:6px;">All Posts</a> | 
             <?php } ?>
-        <?php } ?>
-
-        <?php if($_GET["title"]=="Users" && $imAdmin) { ?>
-            <?php if($r["blocked"]==1) { ?>
-                <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
-            <?php }else{ ?>
-                <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+            
+            <?php if(($_GET["title"]=="Friends") || $imAdmin) { ?>
+                <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?>
+                    <a class="btn btn-warning" href="/page/gallery?user=<?= $r["id"] ?>&name=<?= $r["name"] ?>" style="border-radius:6px;">Gallery</a> | 
+                <?php }else{ ?>
+                    <a class="btn btn-secondary disabled" style="border-radius:6px;">Gallery</a> | 
+                <?php } ?>
             <?php } ?>
-        <?php } else if($_GET["title"]=="Friends") { ?>
-            <?php if(isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1) { ?>
-                <a href="/unblockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
-            <?php }else{ ?>
-                <a href="/blockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+
+            <?php if($_GET["title"]=="Users" && $imAdmin) { ?>
+                <?php if($r["blocked"]==1) { ?>
+                    <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
+                <?php }else{ ?>
+                    <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+                <?php } ?>
+            <?php } else if($_GET["title"]=="Friends") { ?>
+                <?php if(isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1) { ?>
+                    <a href="/unblockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
+                <?php }else{ ?>
+                    <a href="/blockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+                <?php } ?>
             <?php } ?>
-        <?php } ?>
 
-        <?php if(isset($MyfriendsArray[$r["id"]])) { ?>
-            <a href="/unfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>&img=<?= $r["img"] ?>" class="btn btn-danger" style="border-radius:6px;" onclick="return confirm('Remove from Friends list ?');"><?= $_GET["title"]=="Friends" ? 'Remove' : 'Unfriend' ?></a>
-        <?php }else{ ?>
-            <a href="/befriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>" class="btn btn-success" style="border-radius:6px;">Befriend</a>
-        <?php } ?>
+            <?php if(isset($MyfriendsArray[$r["id"]])) { ?>
+                <a href="/unfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>&img=<?= $r["img"] ?>" class="btn btn-danger" style="border-radius:6px;" onclick="return confirm('Remove from Friends list ?');"><?= $_GET["title"]=="Friends" ? 'Remove' : 'Unfriend' ?></a>
+            <?php }else{ ?>
+                <a href="/befriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>" class="btn btn-success" style="border-radius:6px;">Befriend</a>
+            <?php } ?>
+        </div>
 
-    </td>
+    </div>
+<?php if($_GET["title"]=="Friends") { ?>
+    <div style="width:120px;" id="activetd<?= $r["id"] ?>">
+        <form action="/posts" method="post">
+            @csrf
+            <input type="hidden" name="friend" value="<?= $r["id"] ?>">
+            <button type="submit" class="btn btn-success chatbtn">Chat<br>Room</button> 
+        </form>
+        <?php $_SESSION["select"] .= ','.$r["id"] ?>
+    </div>
+<?php } ?>
 
-</tr>
+</div>
 
 <?php } ?>
 
-                    </tbody>
-                </table>
+
+        </div>
 
 
 <nav aria-label="Page navigation example">
@@ -278,36 +281,36 @@ while($r= mysqli_fetch_array ($d1))
     </section>
 </div>
 
-<?php if($_GET["title"]=="Friends") { ?> <!-- track if user still active -->
+<?php if($_GET["title"]=="Friends") { ?> <!-- check if friends still active -->
 
-    <script>
-        function timeDifference(time) {
-            const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
-            const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
-            return differenceInMinutes;
-        }
+<script>
+    function timeDifference(time) {
+        const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
+        const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+        return differenceInMinutes;
+    }
 
-        function myFunction() {
-            fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
-            .then(response=>{
-                for (let key in response) {
-                    if(true || timeDifference(response[key]) < 1){
-                        document.getElementById('activetd'+key).classList.add('activetd');
-                        document.getElementById('active'+key).style.display='';
-                        document.getElementById('inactive'+key).style.display='none';
-                    }
-                    else{
-                        document.getElementById('activetd'+key).classList.remove("activetd");
-                        document.getElementById('active'+key).style.display='none';
-                        document.getElementById('inactive'+key).style.display='';
-                    }
+    function myFunction() {
+        fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
+        .then(response=>{
+            for (let key in response) {
+                if(timeDifference(response[key]) < 1){
+                    document.getElementById('userrow'+key).classList.add('userrow-active');
+                    document.getElementById('active'+key).style.display='';
+                    document.getElementById('inactive'+key).style.display='none';
                 }
-            })
-        }
-        myFunction();
+                else{
+                    document.getElementById('userrow'+key).classList.remove("userrow-active");
+                    document.getElementById('active'+key).style.display='none';
+                    document.getElementById('inactive'+key).style.display='';
+                }
+            }
+        })
+    }
+    myFunction();
 
-        setInterval(myFunction, 60000); //every minute
-    </script>
+    setInterval(myFunction, 60000); //every minute
+</script>
 
 <?php } ?>
 
@@ -330,9 +333,11 @@ while($r= mysqli_fetch_array ($d1))
     }
 
     function send(originalUrl) {
+        <?php if($_GET["title"]=="Users") { ?>
         let isChecked = document.getElementById('myCheckbox').checked ? 1 : 0;
-        let newUrl = `${originalUrl}&include=${isChecked}`;
-        window.location.href = newUrl;
+        originalUrl += `${originalUrl}&include=${isChecked}`;
+        <?php } ?>
+        window.location.href = originalUrl;
     }
 </script>
 

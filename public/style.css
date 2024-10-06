@@ -6,25 +6,74 @@
     cursor: pointer;
 }
 
-:root[data-bs-theme="light"] .activetd {
-    background-color: #edfff6;
+.userstable{
+    margin-top:1rem;
 }
-:root[data-bs-theme="dark"] .activetd {
-    background-color: #58ac82;
+.userstable div{
+    text-align: center;
 }
 
+.userrow{
+    display:flex;
+    align-items: center;
+    box-shadow: -1px -1px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 20px;
+    border-radius: 15px 15px 0 0;
+    border-bottom: solid 1px;
+}
+:root[data-bs-theme="light"] .userrow{
+    background-color:rgba(0, 0, 0, .05) ;
+}
+:root[data-bs-theme="dark"] .userrow{
+    background-color: rgba(170, 168, 168, .05) ; 
+}
+:root[data-bs-theme="light"] .userrow-active{
+    background-color: #d1fde7 !important;
+}
+:root[data-bs-theme="dark"] .userrow-active{
+    background-color: #00c060 !important; 
+    color:white;
+}
+
+.friendbtns {
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 1px;
+}
+:root[data-bs-theme="light"] .friendbtns {
+    background-color: #cccccc8a;
+}
+:root[data-bs-theme="dark"] .friendbtns {
+    background-color: #888888;
+}
+.friendbtns .btn{
+    box-shadow: 2px 2px 4px rgb(0, 0, 0);
+}
+
+
 .chatbtn{
-    background: linear-gradient(to right, #3ed163, #1a5f2a) !important;
+    background: linear-gradient(to right, #3e96d1, #211a5f) !important;
     border-radius:50% !important;
-    padding:15px !important;
+    padding:10px 10px !important;
     border: solid #444466 !important;
+    width: 100px; height: 100px;
+    font-weight: bolder !important;
 }
 .chatbtn:hover{
-    background: linear-gradient(to right, #7ddb94, #40754c) !important;
+    background: linear-gradient(to right, #687dd8, #1e2761) !important;
 }
 .chatbtn:active{
     transform: scale(0.90) !important;
 }
+
+/* :root[data-bs-theme="light"] .userrow{
+    border-bottom: solid 10px #fff !important;
+}
+:root[data-bs-theme="dark"] .userrow{
+    border-bottom: solid 10px #1e1e2d !important;
+} */
 
 .messagerow {
     display:flex;
@@ -45,6 +94,10 @@
 }
 .messagerow .oldmessage *{ 
     margin-bottom: 0;
+}
+.messagerow .oldmessage img{ 
+    max-width: 100px;
+    max-height: 100px;
 }
 :root[data-bs-theme="light"] .messagerow .oldmessage {
     box-shadow: -2px 2px 0px 0px #d7d7d7;
