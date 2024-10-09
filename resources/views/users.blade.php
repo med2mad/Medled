@@ -61,7 +61,7 @@ else{
     <section class="section">
 
 
-<div class="card mb-2" style="margin-right:auto; width:350px; border:1px solid rgb(230,230,230);">
+<div class="card mb-2 searchcard">
 <div class="card-body" style="padding:10px;">
     <form method="get" action="/page/users" class="form form-horizontal">
         <input name="title" type="hidden" value="<?= $_GET["title"] ?>">
@@ -72,7 +72,7 @@ else{
             <div style="display:flex;" class="mb-2">
                 <div class="form-group has-icon-left" style="margin-bottom:0;">
                     <div class="position-relative">
-                        <input name="searchName" value="<?= $searchName ?>" type="text" class="form-control" placeholder="Name" id="first-name-horizontal-icon">
+                        <input name="searchName" value="<?= $searchName ?>" type="text" class="form-control namesearch" placeholder="Name" id="first-name-horizontal-icon">
                         <div class="form-control-icon">
                             <i class="bi bi-person"></i>
                         </div>
@@ -87,9 +87,9 @@ else{
             </div>
 
         <div style="display:flex; align-items:flex-end;">
-            <div style="width:150px; display:flex; align-items:flex-end;">
+            <div style="display:flex; align-items:flex-end;">
                 <nobr>Per page : </nobr>
-                <select id="perpage" onchange="refresh()" class="form-control" style="width:100px; margin-left:5px; padding:0 6px;">
+                <select id="perpage" onchange="refresh()" class="form-control" style="width:50px; margin-left:5px; padding:0 6px;">
                     <option value ="5" <?php if($perpage==5) {echo "selected";} ?> >5</option>
                     <option value="10" <?php if($perpage==10){echo "selected";} ?> >10</option>
                     <option value="15" <?php if($perpage==15){echo "selected";} ?> >15</option>
@@ -98,7 +98,7 @@ else{
                 </select>
             </div>
             <?php if($_GET["title"]=="Users") { ?>
-            <div style="width:40px; text-align:center;">|</div>
+            <div style="width:30px; text-align:center;">|</div>
             <div class="form-group mb-0" style="text-align:center;">
                 <div class="form-check mb-0" class="form-group mb-0" style="text-align:left; padding-left:0">
                     <div class="checkbox">
@@ -141,9 +141,7 @@ else{
 
 
 <div class="userstable">
-
-
-                        
+             
 <?php include ("conn.blade.php");
 $q = "select * from users where id<>".$_SESSION["id"];
 $q .= " AND name like '%".$searchName."%'";
@@ -177,72 +175,78 @@ while($r= mysqli_fetch_array ($d1))
         $is_friend_not_blocking_me = isset($user_friends[$_SESSION["id"]]) ? $user_friends[$_SESSION["id"]]==0:true;
 ?>
 
-<div class="userrow" id="userrow<?= $r["id"] ?>">
+<div class="userrow <?= $_GET["title"]=="Users"?'userrowusers':'userrowfriends' ?>" id="userrow<?= $r["id"] ?>">
 
-    <div style="width:120px;" id="avatar<?= $r["id"] ?>">
-        <img style="border:solid; object-fit:contain; background-color:black; border-radius:50%;" src="/uploads/profiles/<?= $r["img"] ?>" width="100" height="100" alt="photo<?= $r["id"] ?>">
+    <div id="avatar<?= $r["id"] ?>">
+        <div>
+            <img class="usersphoto" src="/uploads/profiles/<?= $r["img"] ?>" alt="photo<?= $r["id"] ?>">
+        </div>
     </div>
-    <div style="flex-grow:1;">
-        <div style="height:65px; display:flex; align-items:center;justify-content:center;">
-            <div><?= $name.($r['type']=='admin'?' (Admin)':'') ?> <br>
+    <div style="flex-grow:1;"> 
+        <div class="namestatus">
+        <div ><?= $name.($r['type']=='admin'?' (Admin)':'') ?> <br>
             <?php if($_GET["title"]=="Friends") { ?>
                 <span id="active<?= $r["id"] ?>" style="display:none;" class="badge bg-success">Active</span>
                 <span id="inactive<?= $r["id"] ?>" style="display:none;" class="badge bg-light-secondary">Inactive</span>
-            <?php } ?></div> 
+            <?php } ?>
         </div>
-        <div class="friendbtns" style="height:60px;">
+        </div>
+        
+        <div class="friendbtns <?= $colorRed ?>"><div>
+    
+            <?php if($_GET["title"]=="Friends") { ?> 
+                <div id="activetd<?= $r["id"] ?>" class="chat2">
+                    <form action="/conversations" method="post">
+                        @csrf
+                        <input type="hidden" name="friendId" value="<?= $r["id"] ?>">
+                        <input type="hidden" name="friendPhoto" value="<?= $r["img"] ?>">
+                        <button type="submit" class="btn btn-success chatbtn">Chat Room</button> 
+                    </form>
+                </div>
+                <?php $_SESSION["select"] .= ','.$r["id"] ?>
+            <?php } ?>
+        
             <?php if(($_GET["title"]=="Friends") || $imAdmin) { ?>
                 <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?>
-                    <a class="btn btn-primary" style="border-radius:6px;" href="/page/create_post?id_r=<?=$r["id"]?>&name_r=<?=$username?>">Post</a> | 
+                    <a class="btn btn-warning" href="/page/gallery?user=<?= $r["id"] ?>&name=<?= $r["name"] ?>">Gallery</a> | 
                 <?php }else{ ?>
-                    <a class="btn btn-secondary disabled" style="border-radius:6px;">Post</a> | 
-                <?php } ?>
-            <?php } ?>
-            
-            <?php if($_GET["title"]=="Friends" || $imAdmin) { ?>
-                <a class="btn btn-success" href="/page/posts?name=<?=$username?>" style="border-radius:6px;">All Posts</a> | 
-            <?php } ?>
-            
-            <?php if(($_GET["title"]=="Friends") || $imAdmin) { ?>
-                <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?>
-                    <a class="btn btn-warning" href="/page/gallery?user=<?= $r["id"] ?>&name=<?= $r["name"] ?>" style="border-radius:6px;">Gallery</a> | 
-                <?php }else{ ?>
-                    <a class="btn btn-secondary disabled" style="border-radius:6px;">Gallery</a> | 
+                    <a class="btn btn-secondary disabled">Gallery</a> | 
                 <?php } ?>
             <?php } ?>
 
-            <?php if($_GET["title"]=="Users" && $imAdmin) { ?>
+            <?php if($imAdmin) { ?>
                 <?php if($r["blocked"]==1) { ?>
-                    <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
+                    <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white;">UnBlock</a> | 
                 <?php }else{ ?>
-                    <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
+                    <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white;">Block</a> | 
                 <?php } ?>
-            <?php } else if($_GET["title"]=="Friends") { ?>
-                <?php if(isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1) { ?>
-                    <a href="/unblockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">UnBlock</a> | 
-                <?php }else{ ?>
-                    <a href="/blockfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; border-radius:6px;">Block</a> | 
-                <?php } ?>
+            <?php } ?>
+            
+            <?php if($_GET["title"]=="Friends") { ?>
+                <?php $blocked = isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1 ?>
+                <span id="unblockfriend<?= $r["id"] ?>" onclick="unblockfriend(<?= $r['id'] ?>, this)"  class="btn" style="background-color:purple; color:white; <?= $blocked ? '':'display:none' ?>">UnBlock</span>
+                <span id="blockfriend<?= $r["id"] ?>" onclick="blockfriend(<?= $r['id'] ?>, this)" class="btn" style="background-color:purple; color:white; <?= $blocked ? 'display:none;':'' ?>">Block</span> | 
             <?php } ?>
 
             <?php if(isset($MyfriendsArray[$r["id"]])) { ?>
-                <a href="/unfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>&img=<?= $r["img"] ?>" class="btn btn-danger" style="border-radius:6px;" onclick="return confirm('Remove from Friends list ?');"><?= $_GET["title"]=="Friends" ? 'Remove' : 'Unfriend' ?></a>
+                <a href="/unfriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>&img=<?= $r["img"] ?>" class="btn btn-danger" onclick="return confirm('Remove from Friends list ?');"><?= $_GET["title"]=="Friends" ? 'Remove' : 'Unfriend' ?></a>
             <?php }else{ ?>
-                <a href="/befriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>" class="btn btn-success" style="border-radius:6px;">Befriend</a>
+                <a href="/befriend?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>&include=<?= $include ?>" class="btn btn-success">Befriend</a>
             <?php } ?>
+        </div></div>
+    </div>
+    
+    <?php if($_GET["title"]=="Friends") { ?>
+        <div id="activetd<?= $r["id"] ?>" class="chat1">
+            <form action="/conversations" method="post">
+                @csrf
+                <input type="hidden" name="friendId" value="<?= $r["id"] ?>">
+                <input type="hidden" name="friendPhoto" value="<?= $r["img"] ?>">
+                <button type="submit" class="btn btn-success chatbtn">Chat<br>Room</button> 
+            </form>
         </div>
-
-    </div>
-<?php if($_GET["title"]=="Friends") { ?>
-    <div style="width:120px;" id="activetd<?= $r["id"] ?>">
-        <form action="/posts" method="post">
-            @csrf
-            <input type="hidden" name="friend" value="<?= $r["id"] ?>">
-            <button type="submit" class="btn btn-success chatbtn">Chat<br>Room</button> 
-        </form>
         <?php $_SESSION["select"] .= ','.$r["id"] ?>
-    </div>
-<?php } ?>
+    <?php } ?>
 
 </div>
 
@@ -286,35 +290,54 @@ while($r= mysqli_fetch_array ($d1))
 <script>
     function timeDifference(time) {
         const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
-        const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+        const differenceInMinutes = differenceInMilliseconds / 60000;
         return differenceInMinutes;
     }
 
-    function myFunction() {
+    function updateStatus() {
         fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
         .then(response=>{
             for (let key in response) {
-                if(timeDifference(response[key]) < 1){
-                    document.getElementById('userrow'+key).classList.add('userrow-active');
-                    document.getElementById('active'+key).style.display='';
-                    document.getElementById('inactive'+key).style.display='none';
-                }
-                else{
+                if(timeDifference(response[key]) > 0.5){ //not active if more that half a minute
                     document.getElementById('userrow'+key).classList.remove("userrow-active");
                     document.getElementById('active'+key).style.display='none';
                     document.getElementById('inactive'+key).style.display='';
                 }
+                else{
+                    document.getElementById('userrow'+key).classList.add('userrow-active');
+                    document.getElementById('active'+key).style.display='';
+                    document.getElementById('inactive'+key).style.display='none';
+                }
             }
         })
     }
-    myFunction();
+    updateStatus();
 
-    setInterval(myFunction, 60000); //every minute
+    setInterval(updateStatus, 30000); //every 30 seconds
 </script>
 
 <?php } ?>
 
 <script>
+    function blockfriend(id, span){
+        fetch("/blockfriend?id="+id).then(response => response.json())
+        .then(response=>{
+            span.closest('.friendbtns').classList.add('bg-danger');
+            span.closest('.friendbtns').classList.add('bg-gradient');
+            span.style.display = 'none';
+            document.getElementById('unblockfriend'+id).style.display = '';
+        });
+    }
+    function unblockfriend(id, span){
+        fetch("/unblockfriend?id="+id).then(response => response.json())
+        .then(response=>{
+            span.closest('.friendbtns').classList.remove('bg-danger');
+            span.closest('.friendbtns').classList.remove('bg-gradient');
+            span.style.display = 'none';
+            document.getElementById('blockfriend'+id).style.display = '';
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('all').addEventListener('click', function() {
             let originalUrl = "/page/users?title=<?=$_GET["title"]?>&page=1&searchName=&perpage="+<?= $perpage ?>;

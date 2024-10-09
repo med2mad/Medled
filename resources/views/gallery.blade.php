@@ -83,7 +83,7 @@
             <div class="col-12">
                 <div class="card mb-1">
                     <div class="card-body pb-1">
-                        <div class="row gallery" data-bs-toggle="modal" data-bs-target="#galleryModal" style="justify-content:space-evenly;">
+                        <div style="display:flex; flex-wrap:wrap; justify-content:space-around" class="gallery">
                         <?php include ("conn.blade.php");
                         $query = "select * from gallery WHERE user = '". $_GET["user"] ."'";
                         if(isset($_GET["date1"]) && !empty($_GET["date1"])){
@@ -102,8 +102,8 @@
                             $i=0;
                             while($r= mysqli_fetch_array($d))
                             { ?>
-                                <div class="col-6 col-sm-6 col-lg-3 mt-2 mt-md-0 mb-md-0 mb-2">
-                                    <img style="width:200px; cursor:pointer; object-fit:contain; border:solid; background-color:black" class="w-100 gallery-img" data-bs-slide-to="<?=$i?>" src="/uploads/gallery/<?= $r["img"] ?>" width="100" height="200" data-bs-target="#Gallerycarousel">
+                                <div class="mt-2 mt-md-0 mb-md-0 mb-2">
+                                    <img style="width:200px; cursor:pointer; object-fit:contain; border:solid; background-color:black" class="gallery-img" data-bs-slide-to="<?=$i?>" src="/uploads/gallery/<?= $r["img"] ?>" width="100" height="200" data-bs-target="#Gallerycarousel">
                                     <div style="text-align:center;">
                                         <span class="no-click" ><?= date ( "d/m/Y" , strtotime($r["time"]) ) ?></span>
                                         <?php if(isset($_SESSION["id"]) && $_SESSION["id"]==$_GET["user"] || isset($_SESSION["type"]) && $_SESSION["type"]=="admin"){ ?>
@@ -221,16 +221,15 @@
 </script>
 
 
-<script src="/assets/extensions/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
 <script src="/assets/extensions/filepond-plugin-file-validate-type/filepond-plugin-file-validate-type.min.js"></script>
-<script src="/assets/extensions/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script> 
+<script src="/assets/extensions/filepond-plugin-image-filter/filepond-plugin-image-filter.min.js"></script> 
 <script src="/assets/extensions/filepond-plugin-image-exif-orientation/filepond-plugin-image-exif-orientation.min.js"></script>
-<script src="/assets/extensions/filepond-plugin-image-filter/filepond-plugin-image-filter.min.js"></script>
 <script src="/assets/extensions/filepond-plugin-image-preview/filepond-plugin-image-preview.min.js"></script>
-<script src="/assets/extensions/filepond-plugin-image-resize/filepond-plugin-image-resize.min.js"></script>
-<script src="/assets/extensions/filepond/filepond.js"></script>
-<script src="/assets/extensions/toastify-js/src/toastify.js"></script>
-<script src="/assets/static/js/pages/filepond.js"></script>
+<script src="/assets/extensions/filepond-plugin-image-crop/filepond-plugin-image-crop.min.js"></script>
+<script src="/assets/extensions/filepond-plugin-file-validate-size/filepond-plugin-file-validate-size.min.js"></script>
 
+<script src="/assets/extensions/filepond/filepond.js"></script>
+<script src="/assets/static/js/pages/filepond.js"></script>
 
 @include( 'partials.footer' )

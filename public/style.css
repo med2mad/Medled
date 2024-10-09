@@ -15,7 +15,9 @@
 
 .userrow{
     display:flex;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: center;
+    flex-wrap: wrap;
     box-shadow: -1px -1px 4px rgba(0, 0, 0, 0.5);
     margin-bottom: 20px;
     border-radius: 15px 15px 0 0;
@@ -31,8 +33,28 @@
     background-color: #d1fde7 !important;
 }
 :root[data-bs-theme="dark"] .userrow-active{
-    background-color: #00c060 !important; 
+    background: linear-gradient(90deg, rgba(123,255,63,1) 0%, rgba(41,166,0,1) 50%, rgba(123,255,63,1) 100%);
     color:white;
+}
+
+.usersphoto{
+    width: 100px;
+    height: 100px;
+    margin:5px;
+    border:solid;
+    object-fit:contain;
+    background-color:black;
+    border-radius:50%;
+}
+
+.namestatus {
+    height:55px; 
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.userrowfriends .namestatus {
+    align-items:flex-start;
 }
 
 .friendbtns {
@@ -41,25 +63,31 @@
     align-items: center;
     justify-content: center;
     border: solid 1px;
+    flex-wrap:wrap;
+    padding:5px;
 }
 :root[data-bs-theme="light"] .friendbtns {
     background-color: #cccccc8a;
 }
 :root[data-bs-theme="dark"] .friendbtns {
-    background-color: #888888;
+    background-color: #888888c7;
 }
 .friendbtns .btn{
-    box-shadow: 2px 2px 4px rgb(0, 0, 0);
+    box-shadow: 1px 1px 4px rgb(0, 0, 0);
+    border-radius:6px;
 }
 
 
 .chatbtn{
+    font-weight: bolder !important;
+    font-size: larger;
+    line-height: normal;
     background: linear-gradient(to right, #3e96d1, #211a5f) !important;
     border-radius:50% !important;
     padding:10px 10px !important;
     border: solid #444466 !important;
     width: 100px; height: 100px;
-    font-weight: bolder !important;
+    margin:5px !important;
 }
 .chatbtn:hover{
     background: linear-gradient(to right, #687dd8, #1e2761) !important;
@@ -68,12 +96,26 @@
     transform: scale(0.90) !important;
 }
 
-/* :root[data-bs-theme="light"] .userrow{
-    border-bottom: solid 10px #fff !important;
+.chat2{ display: none; }
+
+.chat2 .chatbtn{
+    border-radius:8px !important;   
+    width: 240px; height: 60px;
+    box-shadow: none;
+    font-weight: normal !important;
 }
-:root[data-bs-theme="dark"] .userrow{
-    border-bottom: solid 10px #1e1e2d !important;
-} */
+
+#form1btn{
+    width:200px;
+    height:50px;
+    padding:10px;
+}
+
+.searchcard{
+    margin-right:auto;
+    width:350px;
+    border:1px solid rgb(230,230,230);
+}
 
 .messagerow {
     display:flex;
@@ -91,6 +133,7 @@
     overflow: auto;
     padding:10px;
     border-radius: 10px;
+    position:relative; /*for delete span*/
 }
 .messagerow .oldmessage *{ 
     margin-bottom: 0;
@@ -111,6 +154,8 @@
     object-fit:contain;
     background-color:black;
     border-radius:50%;
+    width:100px;
+    height:100px;
 }
 
 .messagesCard{
@@ -126,6 +171,20 @@
 }
 :root[data-bs-theme="light"] .messagesCard nobr {
     color:black;
+}
+
+.oldmessage .delete{
+    position:absolute;
+    top:5px;
+    right:5px;
+    font-weight: bold;
+    color: rgba(128, 128, 128, 0.582);
+    background-color: rgba(199, 255, 206);
+    cursor: pointer;
+    display: none;
+}
+.oldmessage:hover span {
+    display: block;
 }
 
 /* The Modal (background) */
@@ -176,12 +235,79 @@
 
 
 @media only screen and (max-width: 1200px){
-
     .burger-btn{
         display:inline-block !important;
     }
+}
+
+
+@media only screen and (max-width: 650px){
+
+    .userrow{
+        border-radius: 15px 15px 15px 15px;
+    }
+
+    .userrowusers .usersphoto{
+        margin: 5px 5px;
+    }
+    .userrowfriends .usersphoto{
+        margin-bottom: 0;
+    }
+
+    .userrowusers .friendbtns {
+        border-radius: 15px 0 15px 0;
+    }
+    .userrowfriends .friendbtns {
+        border-radius: 0 0 15px 15px;
+        border-left:none; border-right:none; border-bottom: none;
+        padding-top: 0;
+    }
+    .userrowfriends .friendbtns .btn {
+        padding: 4px 6px !important;
+    }
+
+    .userrowfriends .namestatus {
+        height:55px;
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+    }
+
+    .chat1{ display: none; }
+    .chat2{ display: block; }
+
+    #form1btn{
+        width:100px !important;
+    }
+
+    #messages{
+        padding-left: 0;
+        padding-right: 0;
+       
+    }
+
     .messagerow .photo{
         width:50px;
         height: 50px;
     }
-        }
+
+    .page-heading{
+        margin-bottom: 0 !important;
+    }
+
+    .footer{
+        text-align: center;
+    }
+    .footer .contact{
+        display: none;
+    }
+
+    .searchcard{
+        margin-right:auto;
+        width:inherit;
+        border:1px solid rgb(230,230,230);
+    }
+    .searchcard .namesearch{
+        width: 155px;
+    }
+}

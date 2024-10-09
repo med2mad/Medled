@@ -11,28 +11,24 @@ Route::get('/page/{page}', function ($page) {
     return view($page);
 });
 
-Route::post('/posts', function () {
+Route::post('/conversations', function () {
     $x = 10;
     if(isset($_POST["perpage"])) {$x=$_POST["perpage"];}
-    return redirect()->route('routename')->with('friend', $_POST["friend"])->with('perpage', $x)->with('photo', );
+    return redirect()->route('routename')->with('friendId', $_POST["friendId"])->with('perpage', $x)->with('friendPhoto', $_POST["friendPhoto"]);
 });
 Route::get('/form-success', function(){
-    return view('posts', ["friend"=>session('friend'), "perpage"=>session('perpage')]);
+    return view('conversations', ["friendId"=>session('friendId'), "perpage"=>session('perpage'), "friendPhoto"=>session('friendPhoto')]);
 })->name('routename');
 
-Route::post('/post', function () {
-    $message = trim($_POST["message"]);
-    if(!strlen($message)){
-        return view('posts');
-    }
-    
+Route::post('/create_conversation', function () {
+    $message = $_POST["message"];
+
     include ("conn.blade.php");
     if(!$c){
         mysqli_close($c); exit(mysqli_connect_error());
     }
 
-    $friend = mysqli_real_escape_string ($c , $_POST["friendId"]) ;
-    $d = mysqli_query ($c, "select name,mail,img from users where id = '".$friend."'");
+    $d = mysqli_query ($c, "select name,mail,img from users where id = '".$_POST["friendId"]."'");
     if(mysqli_num_rows($d)!=1){
         exit("404 post");
     }
@@ -46,14 +42,16 @@ Route::post('/post', function () {
     $mail_r = mysqli_real_escape_string ($c , $r["mail"]) ;
     $img_r = mysqli_real_escape_string ($c , $r["img"]) ;
 
-    $query="insert into posts(message,file,users_id_w,users_name_w,users_mail_w,users_img_w,users_id_r,users_name_r,users_mail_r,users_img_r)
-                        values('".$message."','','".$_SESSION["id"]."','".$name_w."','".$mail_w."','".$_SESSION["photo"]."','".$friend."','".$name_r."','".$mail_r."','".$img_r."')";
+    $query="insert into conversations(message,users_id_w,users_name_w,users_mail_w,users_img_w,users_id_r,users_name_r,users_mail_r,users_img_r)
+                        values('".$message."','".$_SESSION["id"]."','".$name_w."','".$mail_w."','".$_SESSION["photo"]."','".$_POST["friendId"]."','".$name_r."','".$mail_r."','".$img_r."')";
     mysqli_query ($c, $query);
+    $id = mysqli_insert_id($c);
     mysqli_close($c);
-    return ["message"=>$message];
+    
+    return ["id"=>$id];
 });
 
-Route::get('/deletepost', function () {
+Route::post('/deleteconversation', function () {
     if (session_id()=="") session_start();
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
         exit("404 6");
@@ -64,11 +62,10 @@ Route::get('/deletepost', function () {
         exit(mysqli_connect_error());
     }
     else{
-        mysqli_query ($c, "delete from posts where id=" . $_GET["deletemessage"] . " and (users_id_w=".$_SESSION["id"]." or users_id_r=".$_SESSION["id"].")") ;
-        if(mysqli_affected_rows($c)<1){mysqli_close($c);exit("404 7");} 
+        mysqli_query ($c, "delete from conversations where id=" . $_POST["messageid"]) ;
+        if(mysqli_affected_rows($c)<1){mysqli_close($c); exit("404 7");} 
         mysqli_close($c);
-        if(isset($_GET["file"]) && $_GET["file"]!=""){unlink("uploads/posts/".$_GET["file"]);}
-        return view('posts');
+        return ['deleted' => 1];
     }
 });
 
@@ -238,7 +235,7 @@ Route::get('/blockfriend', function () {
 
         mysqli_query ($c, "update users set friends='".json_encode($phpArray)."' where id=" . $_SESSION["id"]) ;
         mysqli_close($c);
-        return view('users');
+        return ["id" => $_GET["id"]];
     }
 });
 
@@ -265,7 +262,7 @@ Route::get('/unblockfriend', function () {
 
         mysqli_query ($c, "update users set friends='".json_encode($phpArray)."' where id=" . $_SESSION["id"]) ;
         mysqli_close($c);
-        return view('users');
+        return ["id" => $_GET["id"]];
     }
 });
 
@@ -402,9 +399,9 @@ Route::post('/login', function () {
                 return view('signup1');
             }
             
-            $d = mysqli_query ($c, "select count(red) from posts where users_id_r='".$r["id"]."' and red=0");
+            $d = mysqli_query ($c, "select count(id) from conversations where users_id_r='".$_SESSION["id"]."' and red=0");
             $_SESSION["notif"]=mysqli_fetch_array($d)[0];
-            
+
             mysqli_close($c);
             return view('index');
 		}
@@ -423,6 +420,14 @@ Route::get('/logout', function () {
     return view('index');
 });
 
+Route::get('/gettime', function(Request $request){
+    include ("conn.blade.php");
+    $d = mysqli_query ($c, "select time from users where id = ".$request->input('q'));
+    mysqli_close($c);
+    $r = mysqli_fetch_array($d);
+    return ["time" => $r["time"]];
+});
+
 Route::get('/gettimes', function(Request $request){
     include ("conn.blade.php");
     $d = mysqli_query ($c, "select id,time from users where id IN (-1".$request->input('q').")");
@@ -437,14 +442,15 @@ Route::get('/gettimes', function(Request $request){
 
 Route::get('/getmessages', function(Request $request){
     include ("conn.blade.php");
-    $q = "select id,message from posts where red = 0 and users_id_w = " . $request->input('friendId') ." ORDER BY id DESC";
+    if (session_id()=="") session_start();
+    $q = "select id,message from conversations where red = 0 and users_id_w = " . $request->input('friendId') ." and users_id_r = " . $_SESSION["id"] . " ORDER BY id DESC";
     $d = mysqli_query ($c, $q);
     $messages = [];
     while($r = mysqli_fetch_array($d)){
         $messages[$r["id"]] = $r["message"];
     }
 
-    mysqli_query ($c, "update posts set red=1 where users_id_w=" . $request->input('friendId')) ;
+    mysqli_query ($c, "update conversations set red=1 where users_id_w=" . $request->input('friendId') . " and users_id_r = " . $_SESSION["id"] ) ;
     mysqli_close($c);
     return $messages;
 });
@@ -454,5 +460,5 @@ Route::get('/updatetime', function(){
     if (session_id()=="") session_start();
     mysqli_query ($c, "update users set time=now() where id=" . $_SESSION["id"]);
     mysqli_close($c);
-    return '[]';
+    return ["1"=>1];
 });
