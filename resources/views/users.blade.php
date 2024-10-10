@@ -2,7 +2,7 @@
 
 <?php
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
-        exit("Activate your account !");
+        exit("Login first !");
     }
     $searchName = isset($_GET["searchName"]) ? trim($_GET["searchName"]):''; //if search happend
     $include = isset($_GET["include"]) && (($_GET["include"]=="on" ||  $_GET["include"]==1 ||  $_GET["include"]=='checked'));
@@ -117,7 +117,7 @@ else{
 <div class="card" style="border:1px solid rgb(230,230,230);"> <?php $_SESSION["select"]='' ?>
     <div class="card-body">
 
-<nav aria-label="Page navigation example">
+<nav class="userpagination" aria-label="Page navigation example">
     <ul class="pagination pagination-primary" style="justify-content:center; flex-wrap:wrap;">
         <li class="page-item">
             <span class="page-link" onclick="pagelink(1, <?= $perpage ?>)">
@@ -256,7 +256,7 @@ while($r= mysqli_fetch_array ($d1))
         </div>
 
 
-<nav aria-label="Page navigation example">
+<nav class="userpagination" aria-label="Page navigation example">
     <ul class="pagination pagination-primary" style="justify-content:center; flex-wrap:wrap;">
         <li class="page-item">
             <span class="page-link" onclick="pagelink(1, <?= $perpage ?>)">
@@ -288,17 +288,17 @@ while($r= mysqli_fetch_array ($d1))
 <?php if($_GET["title"]=="Friends") { ?> <!-- check if friends still active -->
 
 <script>
-    function timeDifference(time) {
-        const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
-        const differenceInMinutes = differenceInMilliseconds / 60000;
+    function timeDifference(currantTime, oldTime) {
+        const differenceInSeconds = Math.abs(currantTime - oldTime);
+        const differenceInMinutes = differenceInSeconds / 60;
         return differenceInMinutes;
     }
 
     function updateStatus() {
         fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
         .then(response=>{
-            for (let key in response) {
-                if(timeDifference(response[key]) > 0.5){ //not active if more that half a minute
+            for (let key in response.friends) {
+                if(timeDifference(response.curranttime, response.friends[key]) > 0.5){ //not active if more that half a minute
                     document.getElementById('userrow'+key).classList.remove("userrow-active");
                     document.getElementById('active'+key).style.display='none';
                     document.getElementById('inactive'+key).style.display='';
@@ -320,21 +320,25 @@ while($r= mysqli_fetch_array ($d1))
 
 <script>
     function blockfriend(id, span){
+        span.closest('.friendbtns').classList.add('bg-danger');
+        span.closest('.friendbtns').classList.add('bg-gradient');
+        span.style.display = 'none';
+        document.getElementById('unblockfriend'+id).style.display = '';
+        
         fetch("/blockfriend?id="+id).then(response => response.json())
         .then(response=>{
-            span.closest('.friendbtns').classList.add('bg-danger');
-            span.closest('.friendbtns').classList.add('bg-gradient');
-            span.style.display = 'none';
-            document.getElementById('unblockfriend'+id).style.display = '';
+
         });
     }
     function unblockfriend(id, span){
+        span.closest('.friendbtns').classList.remove('bg-danger');
+        span.closest('.friendbtns').classList.remove('bg-gradient');
+        span.style.display = 'none';
+        document.getElementById('blockfriend'+id).style.display = '';
+        
         fetch("/unblockfriend?id="+id).then(response => response.json())
         .then(response=>{
-            span.closest('.friendbtns').classList.remove('bg-danger');
-            span.closest('.friendbtns').classList.remove('bg-gradient');
-            span.style.display = 'none';
-            document.getElementById('blockfriend'+id).style.display = '';
+
         });
     }
 

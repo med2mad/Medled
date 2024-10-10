@@ -9,17 +9,17 @@
     // if (session_id()=="") session_start();
 
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
-        exit("Activate your account !");
+        exit("Login first !");
     }
 
     if($_GET["user"] != $_SESSION["id"] && isset($_SESSION["type"]) && $_SESSION["type"]=="user") { //do not check if its your gallery or if i'm admin
-        if($_SESSION["blocked"]==1){ exit("404 1"); } //if i'm blocked by admin
+        if($_SESSION["blocked"]==1){ exit("Blocked by admin"); } //if i'm blocked by admin
 
         include ("conn.blade.php");
         $d=mysqli_query ($c, "select friends,blocked from users WHERE id='".$_GET["user"]."'");
         $data= mysqli_fetch_array($d);
 
-        if($data["blocked"]==1){ exit("404 2"); } //if user is blocked by admin
+        if($data["blocked"]==1){ exit("Blocked by admin"); } //if user is blocked by admin
 
         $friendsArray = json_decode($data["friends"], true);
         mysqli_close($c);
@@ -134,7 +134,7 @@
     <a class="text-primary" href="/page/gallery?user=<?= $_GET["user"] ?>&page=<?= $pagesnbr ?>&name=<?= $name ?>&perpage=<?= $perpage ?><?= $date1.$date2 ?>&last=yes"> &nbsp; >> &nbsp; </a>
 </div>
 
-<div class="pb-4 pt-0" style="display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between">
+<div class="py-4" style="display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between">
     <div>
         Per page : 
         <select id="perpage" onchange="refresh()" class="form-control" style="width:100px; display:inline;">
@@ -146,13 +146,13 @@
         </select> 
     </div>
 
-    <div>
+    <div id="datefilter">
         <form method="get" action="/page/gallery" style="display:flex; align-items:center; flex-wrap:wrap;">
-        <div style="text-align:right">From : </div><div><input type="date" name="date1" id="date1" value="<?= $defdate1 ?>" class="form-control"></div>
-        <div style="width:50px;text-align:right"> - To : </div><div><input type="date" name="date2" id="date2" value="<?= $defdate2 ?>" class="form-control"></div>
-        <div style="width:20px;text-align:right"><input type="hidden" name="user" value = "<?= $_GET["user"] ?>"></div>
-        <input type="hidden" name="name" value = "<?= $name ?>">
-        <div><input type="submit" class="btn btn-secondary" value="Filter" class="form-control"></div>
+            <div style="text-align:right">From : </div><div><input type="date" name="date1" id="date1" value="<?= $defdate1 ?>" class="form-control"></div>
+            <div style="width:50px;text-align:right"> - To : </div><div><input type="date" name="date2" id="date2" value="<?= $defdate2 ?>" class="form-control"></div>
+            <div style="width:20px;text-align:right"><input type="hidden" name="user" value = "<?= $_GET["user"] ?>"></div>
+            <input type="hidden" name="name" value = "<?= $name ?>">
+            <div><input type="submit" class="btn btn-secondary" value="Filter" class="form-control"></div>
         </form>
     </div>
 </div>

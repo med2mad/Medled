@@ -117,7 +117,7 @@ Route::get('/deletegallery', function () {
         mysqli_query ($c, "delete from gallery where id=" . $_GET["id"]) ;
         if(mysqli_affected_rows($c)<1){mysqli_close($c); return view("gallery");} 
         mysqli_close($c);
-        unlink("uploads/gallery/".$_GET["img"]);
+        // unlink("uploads/gallery/".$_GET["img"]);
         return view("gallery");
     }
 });
@@ -393,6 +393,8 @@ Route::post('/login', function () {
             $_SESSION["token"]=$r["token"];
             $_SESSION["blocked"]=$r["blocked"];
             $_SESSION["verified"]=$r["verified"];
+            $_SESSION["friendId"]=0;
+            $_SESSION["friendPhoto"]="";
             $_SESSION["notif"]=0;
 
             if($r["verified"]==0){
@@ -425,7 +427,7 @@ Route::get('/gettime', function(Request $request){
     $d = mysqli_query ($c, "select time from users where id = ".$request->input('q'));
     mysqli_close($c);
     $r = mysqli_fetch_array($d);
-    return ["time" => $r["time"]];
+    return ["oldtime"=>$r["time"], "curranttime"=>time()];
 });
 
 Route::get('/gettimes', function(Request $request){
@@ -437,7 +439,7 @@ Route::get('/gettimes', function(Request $request){
         $friends[$r["id"]] = $r["time"];
     }
 
-    return $friends;
+    return  ["friends"=>$friends, "curranttime"=>time()];
 });
 
 Route::get('/getmessages', function(Request $request){
@@ -458,7 +460,7 @@ Route::get('/getmessages', function(Request $request){
 Route::get('/updatetime', function(){
     include ("conn.blade.php");
     if (session_id()=="") session_start();
-    mysqli_query ($c, "update users set time=now() where id=" . $_SESSION["id"]);
+    mysqli_query ($c, "update users set time=UNIX_TIMESTAMP() where id=" . $_SESSION["id"]);
     mysqli_close($c);
     return ["1"=>1];
 });

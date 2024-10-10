@@ -262,7 +262,7 @@
         }
         myFunction();
 
-        setInterval(myFunction, 30000); //every 30 seconds
+        setInterval(myFunction, 15000); //every 15 seconds
     </script>
 
 <?php } ?>

@@ -27,6 +27,7 @@
             <div class="col-12 col-md-6 order-md-1 order-last">
                 <h3>
                     Chat Room
+                    <img id="headerphoto" src="/uploads/profiles/<?= $_SESSION["friendPhoto"] ?>" alt="photo<?= $_SESSION["friendId"] ?>">
                     <span id="active" style="display:none;" class="badge bg-light-success">Active</span>
                     <span id="inactive" style="display:none;" class="badge bg-light-secondary">Inactive</span>
                 </h3>
@@ -214,16 +215,16 @@ while($r= mysqli_fetch_array($d))
 </script>
 
 <script>
-    function timeDifference(time) {
-        const differenceInMilliseconds = Math.abs(Date.now() - new Date(time).getTime());
-        const differenceInMinutes = differenceInMilliseconds / 60000;
+    function timeDifference(currantTime, oldTime) {
+        const differenceInSeconds = Math.abs(currantTime - oldTime);
+        const differenceInMinutes = differenceInSeconds / 60;
         return differenceInMinutes;
     }
 
     function updateStatus() {
         fetch("/gettime?q=<?=$_SESSION["friendId"]?>").then(response => response.json())
         .then(response=>{
-            if(timeDifference(response['time']) > 0.5){ //not active if more that half a minute
+            if(timeDifference(response.curranttime, response.oldtime) > 0.5){ //not active if more that half a minute
                 document.getElementById('active').style.display='none';
                 document.getElementById('inactive').style.display='';
             }
