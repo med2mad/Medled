@@ -13,7 +13,7 @@
     else{$_SESSION["perpage"]=10;}
     
     include ("conn.blade.php");
-    mysqli_query ($c, "update conversations set red=1 where users_id_r='".$_SESSION["id"]."'" ) ; $_SESSION["notif"]=0;
+    mysqli_query ($c, "update conversations set red=1 where users_id_r='".$_SESSION["id"]."'" ) ;
     mysqli_close($c);
 
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
@@ -201,15 +201,14 @@ while($r= mysqli_fetch_array($d))
             }
         });
     }
-    setInterval(newMessages, 5000); //every minute
+    setInterval(newMessages, 5000); //every 5 seconds
 
     function addMessage(message, source, id){
         const newDiv = document.createElement("div");
         newDiv.innerHTML = source.innerHTML;
         if(id==0)
         { newDiv.querySelector(".newmessage").innerHTML = message; }
-        else
-        { newDiv.querySelector(".newmessage").innerHTML = message + '<span onclick="deletemessage(this)" data-value="'+id+'" class="delete" >X</span>'; }
+        else{ newDiv.querySelector(".newmessage").innerHTML = message + '<span onclick="deletemessage(this)" data-value="'+id+'" class="delete" >X</span>'; }
         document.getElementById("messages").prepend(newDiv);
     }
 </script>

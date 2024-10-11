@@ -395,15 +395,11 @@ Route::post('/login', function () {
             $_SESSION["verified"]=$r["verified"];
             $_SESSION["friendId"]=0;
             $_SESSION["friendPhoto"]="";
-            $_SESSION["notif"]=0;
 
             if($r["verified"]==0){
                 return view('signup1');
             }
             
-            $d = mysqli_query ($c, "select count(id) from conversations where users_id_r='".$_SESSION["id"]."' and red=0");
-            $_SESSION["notif"]=mysqli_fetch_array($d)[0];
-
             mysqli_close($c);
             return view('index');
 		}
@@ -455,6 +451,18 @@ Route::get('/getmessages', function(Request $request){
     mysqli_query ($c, "update conversations set red=1 where users_id_w=" . $request->input('friendId') . " and users_id_r = " . $_SESSION["id"] ) ;
     mysqli_close($c);
     return $messages;
+});
+
+Route::get('/getnotifications', function(){
+    include ("conn.blade.php");
+    if (session_id()=="") session_start();
+    $q = "select users_id_w, users_name_w, users_img_w, count(id) as count from conversations where red = 0 and users_id_r=".$_SESSION["id"]." GROUP BY users_id_w";
+    $d = mysqli_query ($c, $q);
+    $notifications = array();
+    while ($row = mysqli_fetch_array($d, MYSQLI_ASSOC)) {
+        $notifications[] = $row;
+    }
+    return $notifications;
 });
 
 Route::get('/updatetime', function(){

@@ -1,10 +1,13 @@
 <?php
-
+//offline
 $c= mysqli_connect ("localhost" , "root" , "" , "medled") ;
+
 /*online
-    $c= mysqli_connect ("sql203.epizy.com" , "epiz_32587616" , "t93O5tXyNvVG" , "epiz_32587616_test") ;
+    $c= mysqli_connect ("sql210.infinityfree.com" , "if0_37479146" , "IFKytCrgHV7CK" , "if0_37479146_medled") ;
     //connection values from : controle panel (CPanel) > Mysql Databases
+                                home page > MYSQL Databases
 */
+
 //mysqli_set_charset($c, "utf8mb4");
 if(!$c){
     exit(mysqli_connect_error());

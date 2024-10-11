@@ -50,6 +50,8 @@
         .avatar img{
             object-fit: contain !important;
             background-color: rgba(0,0,0,0.4);
+            border:solid 2px;
+            background-color:black;
         }
         .userstatusactive{
             background-color: #edfff6 !important;
@@ -191,8 +193,11 @@
                                 <li class="nav-item dropdown me-3">
                                     <a class="nav-link active dropdown-toggle text-gray-600" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                         <i class='bi bi-bell bi-sub fs-4'></i>
-                                        <span class="badge badge-notification bg-danger"> <?php $_SESSION["notif"] ?> </span>
+                                        <span id="badgenotifications" class="badge badge-notification bg-danger"></span>
                                     </a>
+                                    <ul id="notificationsid" class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="dropdownMenuButton">
+
+                                    </ul>
                                 </li>
                             </ul>
                             <div class="dropdown">
@@ -211,10 +216,10 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton" style="min-width: 11rem;">
                                     <li>
-                                        <h6 class="dropdown-header">Hello, John!</h6>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="icon-mid bi bi-person me-2"></i>My Profile
+                                        </a>
                                     </li>
-                                    <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-person me-2"></i> My
-                                            Profile</a></li>
                                     <li>
                                         <a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i> Settings</a>
                                     </li>
@@ -252,17 +257,48 @@
                 </nav>
             </header>
             <div id="main-content">
-                
-            
+
+<div id="notificationsource" style="display:none;">
+    <li class="dropdown-item notification-item">
+        <a class="d-flex align-items-center" href="#">
+            <div class="avatar avatar-md">
+                <img>
+            </div>
+            <div class="notification-text ms-1">
+                <p class="notification-title font-bold"></p>
+            </div>
+        </a>
+    </li>
+</div>
+
 <?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true") { ?>
 
     <script>
-        function myFunction() {
+        function updateTime() {
             fetch("/updatetime").then(response => response.json()).then(data=>{});
         }
-        myFunction();
-
-        setInterval(myFunction, 15000); //every 15 seconds
+        updateTime();
+        setInterval(updateTime, 15000); //every 15 seconds
+    </script>
+    <script>
+        function myNotifications() {
+            fetch("/getnotifications").then(response => response.json())
+            .then(notifications=>{
+                let total = 0;
+                document.getElementById("notificationsid").innerHTML="";
+                notifications.forEach(row => {
+                    total += parseInt(row.count, 10);
+                    const newDiv = document.createElement("div");
+                    newDiv.innerHTML = document.getElementById("notificationsource").innerHTML;
+                    newDiv.querySelector("img").src = "/uploads/profiles/"+ row.users_img_w;
+                    newDiv.querySelector("p").innerHTML = row.users_name_w + ' <span class="badge badge-notification bg-danger">'+row.count+'</span>';
+                    document.getElementById("notificationsid").prepend(newDiv);
+                });
+                document.getElementById("badgenotifications").innerHTML = parseInt(total, 10);
+            });
+        }
+        myNotifications();
+        setInterval(myNotifications, 5000); //every 5 seconds
     </script>
 
 <?php } ?>
