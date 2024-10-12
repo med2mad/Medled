@@ -27,8 +27,8 @@
     <script src="/assets/static/js/initTheme.js"></script>
     <div id="auth">
         
-<div class="row h-100">
-    <div class="col-lg-5 col-12">
+<div class="h-100">
+    <div class="col-lg-5 col-12" style="margin:auto;">
         <div id="auth-left">
             <div class="auth-logo">
                 <a href="/"><img src="/assets/static/images/logo/logo.png" alt="Logo"></a>
@@ -52,7 +52,7 @@
                 <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Log in</button>
             </form>
             <div class="text-center mt-5 text-lg fs-4">
-                <p class="text-gray-600">Don't have an account? <a href="/page/create_user" class="font-bold">Sign up</a>.</p>
+                <p class="text-gray-600">Don't have an account?<br><a href="/page/create_user" class="font-bold">Sign up</a>.</p>
             </div>
         </div>
     </div>

@@ -16,7 +16,7 @@
     mysqli_query ($c, "update conversations set red=1 where users_id_r='".$_SESSION["id"]."'" ) ;
     mysqli_close($c);
 
-    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
+    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
         exit("Activate your account !");
     }
 ?>

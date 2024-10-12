@@ -188,8 +188,8 @@
                         // if (session_id()=="") session_start();
                         if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true") { ?>
 
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav ms-auto mb-lg-0">
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent" style="justify-content:flex-end;">
+                            <ul id="notificationbell" class="navbar-nav ms-auto mb-lg-0">
                                 <li class="nav-item dropdown me-3">
                                     <a class="nav-link active dropdown-toggle text-gray-600" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                         <i class='bi bi-bell bi-sub fs-4'></i>
@@ -266,6 +266,11 @@
             </div>
             <div class="notification-text ms-1">
                 <p class="notification-title font-bold"></p>
+                <form action="/conversations" method="post">
+                    @csrf
+                    <input type="hidden" name="friendId" class="inputid">
+                    <input type="hidden" name="friendPhoto" class="inputphoto">
+                </form>
             </div>
         </a>
     </li>
@@ -287,18 +292,37 @@
                 let total = 0;
                 document.getElementById("notificationsid").innerHTML="";
                 notifications.forEach(row => {
+
                     total += parseInt(row.count, 10);
                     const newDiv = document.createElement("div");
                     newDiv.innerHTML = document.getElementById("notificationsource").innerHTML;
                     newDiv.querySelector("img").src = "/uploads/profiles/"+ row.users_img_w;
-                    newDiv.querySelector("p").innerHTML = row.users_name_w + ' <span class="badge badge-notification bg-danger">'+row.count+'</span>';
+                    newDiv.querySelector("p").innerHTML = row.users_name_w + ' <span class="badge badge-notification bg-danger">'+row.count+'</span></span>';
+                    // newDiv.querySelector("a").addEventListener('click',()=>{notificationclick(newDiv.querySelector("form"), row.users_id_w, row.users_img_w)});
                     document.getElementById("notificationsid").prepend(newDiv);
+
                 });
-                document.getElementById("badgenotifications").innerHTML = parseInt(total, 10);
+                if(parseInt(total, 10)>0){
+                    document.getElementById("badgenotifications").innerHTML = parseInt(total, 10);
+                    document.getElementById("notificationbell").style.display = '';
+                }
+                else{
+                    document.getElementById("notificationbell").style.display = 'none';
+                }
             });
         }
         myNotifications();
-        setInterval(myNotifications, 5000); //every 5 seconds
+        setInterval(myNotifications, 5000 * 1000); //every 5 seconds
+
+        function notificationclick(form, id, photo){
+            console.log('form : ' , form);
+            console.log('inputid : ' , form.querySelector(".inputid").value);
+            console.log('inputphoto : ' , form.querySelector(".inputphoto").value);
+
+            form.querySelector(".inputid").value = id;
+            form.querySelector(".inputphoto").value = photo;
+            // form.submit();
+        }
     </script>
 
 <?php } ?>

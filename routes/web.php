@@ -16,7 +16,7 @@ Route::post('/conversations', function () {
     if(isset($_POST["perpage"])) {$x=$_POST["perpage"];}
     return redirect()->route('routename')->with('friendId', $_POST["friendId"])->with('perpage', $x)->with('friendPhoto', $_POST["friendPhoto"]);
 });
-Route::get('/form-success', function(){
+Route::get('/form-success', function(){ //Redirect After Post (PRG Pattern)
     return view('conversations', ["friendId"=>session('friendId'), "perpage"=>session('perpage'), "friendPhoto"=>session('friendPhoto')]);
 })->name('routename');
 
@@ -28,7 +28,7 @@ Route::post('/create_conversation', function () {
         mysqli_close($c); exit(mysqli_connect_error());
     }
 
-    $d = mysqli_query ($c, "select name,mail,img from users where id = '".$_POST["friendId"]."'");
+    $d = mysqli_query ($c, "select name,img from users where id = '".$_POST["friendId"]."'");
     if(mysqli_num_rows($d)!=1){
         exit("404 post");
     }
@@ -37,13 +37,10 @@ Route::post('/create_conversation', function () {
     if (session_id()=="") session_start();
     $message = mysqli_real_escape_string($c , $message) ;
     $name_w = mysqli_real_escape_string ($c , $_SESSION["name"]) ;
-    $mail_w = mysqli_real_escape_string ($c , $_SESSION["mail"]) ;
     $name_r = mysqli_real_escape_string ($c , $r["name"]) ;
-    $mail_r = mysqli_real_escape_string ($c , $r["mail"]) ;
-    $img_r = mysqli_real_escape_string ($c , $r["img"]) ;
 
-    $query="insert into conversations(message,users_id_w,users_name_w,users_mail_w,users_img_w,users_id_r,users_name_r,users_mail_r,users_img_r)
-                        values('".$message."','".$_SESSION["id"]."','".$name_w."','".$mail_w."','".$_SESSION["photo"]."','".$_POST["friendId"]."','".$name_r."','".$mail_r."','".$img_r."')";
+    $query="insert into conversations(message,users_id_w,users_name_w,users_img_w,users_id_r,users_name_r,users_img_r)
+                        values('".$message."','".$_SESSION["id"]."','".$name_w."','".$_SESSION["photo"]."','".$_POST["friendId"]."','".$name_r."','".$img_r."')";
     mysqli_query ($c, $query);
     $id = mysqli_insert_id($c);
     mysqli_close($c);
@@ -53,7 +50,7 @@ Route::post('/create_conversation', function () {
 
 Route::post('/deleteconversation', function () {
     if (session_id()=="") session_start();
-    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
+    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
         exit("404 6");
     }
 
@@ -100,7 +97,7 @@ Route::post('/create_gallery', function () {
 
 Route::get('/deletegallery', function () {
     if (session_id()=="") session_start();
-    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
+    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
         exit("404 8");
     }
     if(isset($_SESSION["type"]) && $_SESSION["type"]=="user"){ //if user is not admin he cannot delete others gallery
@@ -272,9 +269,8 @@ Route::post('/signup', function () {
     }
 
     $name = trim($_POST["name"]);
-    $mail = trim($_POST["mail"]);
 
-    if(empty($name) || empty($mail) || empty($_POST["pass"]) || empty($_POST["pass2"])){
+    if(empty($name) || empty($_POST["pass"]) || empty($_POST["pass2"])){
         exit("404 empty !");
     }
     elseif (mb_strlen($name,"UTF-8") < 5 || mb_strlen($name,"UTF-8") > 20) {
@@ -282,12 +278,6 @@ Route::post('/signup', function () {
     }
     elseif (mb_strlen($_POST["pass"],"UTF-8") < 5 || mb_strlen($_POST["pass"],"UTF-8") > 20) {
         exit("404 pass 5 to 20");
-    }
-    elseif (mb_strlen($_POST["pass2"],"UTF-8") < 5 || mb_strlen($_POST["pass2"],"UTF-8") > 20) {
-        exit("404 pass2 5 to 20");
-    }
-    elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-        exit("404 Email not valid!");
     }
     elseif($_POST["pass"] !== $_POST["pass2"]){
         return view($_POST["page"], ['error'=>'Password and Confirmation not identical']);
@@ -302,26 +292,16 @@ Route::post('/signup', function () {
     }
     else{
         $name = mysqli_real_escape_string ($c , $name) ;
-        $mail = mysqli_real_escape_string ($c , $mail) ;
         $pass = mysqli_real_escape_string ($c , $_POST["pass"] ) ;
 
         if (session_id()=="") session_start();
 
-        if($_POST["page"]=="create_user" || trim($_POST["mail"])!=$_SESSION["mail"]) {
-            $d = mysqli_query ($c, "select id from users where mail = '".$mail."' limit 3");
-            if(mysqli_num_rows($d)>=2) {
-                return view($_POST["page"], ['error'=>'1 email address can be used to create only 2 accounts maximum']);
-            }
-            $_SESSION["verified"]=0;
-        }
         if($_POST["page"]=="create_user" || trim($_POST["name"])!=$_SESSION["name"]) {
             $d = mysqli_query ($c, "select id from users where name = '".$name."' limit 1");
             if(mysqli_num_rows($d)>0) {
                 return view($_POST["page"], ['error'=>'Already existing name"']);
             }
         }
-
-        $token = substr(number_format(time() * rand(), 0, '', ''), 0, 6);
 
         $newimgname = ($_POST["page"]=="create_user") ? "136.jpg" : $_SESSION["photo"];
         if(isset($_FILES["photo"]) && $_FILES["photo"]["error"]===0 && $_FILES["photo"]["size"]<11048576){
@@ -335,10 +315,10 @@ Route::post('/signup', function () {
         }
 
         if($_POST["page"]=="create_user"){
-            $query="insert into users(name,pass,mail,img,token)values('".$name."','".$pass."','".$mail."','".$newimgname."','$token')";
+            $query="insert into users(name,pass,img)values('".$name."','".$pass."','".$newimgname."')";
         }
         else{
-            $query="update users set name='".$name."', pass='".$pass."', mail='".$mail."', img='".$newimgname."', verified='".$_SESSION["verified"]."', token='".$token."' where id='".$_SESSION["id"]."'";
+            $query="update users set name='".$name."', pass='".$pass."', img='".$newimgname."' where id='".$_SESSION["id"]."'";
         }
         mysqli_query($c, $query);
         mysqli_close($c);
@@ -346,19 +326,14 @@ Route::post('/signup', function () {
         if($_POST["page"]=="create_user"){
             session_unset();
             session_destroy();
-            return view('signup0', ['name'=>$_POST["name"], 'pass'=>$_POST["pass"], 'mail'=>$_POST["mail"]]);
+            return view('signup0', ['name'=>$_POST["name"], 'pass'=>$_POST["pass"]]);
         }
         else{
             $_SESSION["name"]=$_POST["name"];
-            $_SESSION["mail"]=$_POST["mail"];
             $_SESSION["pass"]=$_POST["pass"];
-            $_SESSION["token"]=$token;
             $_SESSION["photo"]=$newimgname;
-    
-            if($_SESSION["verified"]==0)
-                return view('signup1');
-            else
-                return view('index');
+
+            return view('index');
         }
 
         exit;
@@ -386,22 +361,15 @@ Route::post('/login', function () {
             $_SESSION["auth"]="true";
             $_SESSION["id"]=$r["id"];
             $_SESSION["name"]=$r["name"];
-            $_SESSION["mail"]=$r["mail"];
             $_SESSION["pass"]=$r["pass"];
             $_SESSION["photo"]=$r["img"];
             $_SESSION["type"]=$r["type"];
-            $_SESSION["token"]=$r["token"];
             $_SESSION["blocked"]=$r["blocked"];
-            $_SESSION["verified"]=$r["verified"];
             $_SESSION["friendId"]=0;
             $_SESSION["friendPhoto"]="";
 
-            if($r["verified"]==0){
-                return view('signup1');
-            }
-            
             mysqli_close($c);
-            return view('index');
+            return redirect()->route('routenamelogin');
 		}
 		else
 		{
@@ -410,6 +378,9 @@ Route::post('/login', function () {
 		}
 	}
 });
+Route::get('/form-success2', function(){ //Redirect After Post (PRG Pattern)
+    return view('index');
+})->name('routenamelogin');
 
 Route::get('/logout', function () {
     if (session_id()=="") session_start();

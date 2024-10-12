@@ -8,7 +8,7 @@
 <?php 
     // if (session_id()=="") session_start();
 
-    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
+    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
         exit("Login first !");
     }
 

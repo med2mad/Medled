@@ -1,7 +1,7 @@
 @include( 'partials.header' )
 
 <?php
-    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true" || !isset($_SESSION["verified"]) || $_SESSION["verified"]==0){
+    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
         exit("Login first !");
     }
     $searchName = isset($_GET["searchName"]) ? trim($_GET["searchName"]):''; //if search happend
@@ -167,7 +167,6 @@ mysqli_close($c);
 while($r= mysqli_fetch_array ($d1))
 { 
     $name = htmlspecialchars($r["name"]);
-    $mail = htmlspecialchars($r["mail"]);
     $colorRed = $_GET["title"]=="Friends" && isset($MyfriendsArray) && $MyfriendsArray[$r["id"]]==1 || $r["blocked"]==1 ? 'bg-danger bg-gradient' : '';
     $username = urlencode($r["name"]);
     $imAdmin = isset($_SESSION["type"]) && $_SESSION["type"]=="admin";

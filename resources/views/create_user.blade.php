@@ -27,21 +27,14 @@
     <script src="/assets/static/js/initTheme.js"></script>
     <div id="auth">
         
-<div class="row h-100">
-    <div class="col-lg-5 col-12">
+<div class="h-100">
+    <div class="col-lg-5 col-12" style="margin:auto;">
         <div id="auth-left">
             <div class="auth-logo">
                 <a href="/"><img src="/assets/static/images/logo/logo.png" alt="Logo"></a>
             </div>
             <h1 class="auth-title">Sign Up</h1>
-
             <form action="/">
-                <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="text" class="form-control form-control-xl" placeholder="Email">
-                    <div class="form-control-icon">
-                        <i class="bi bi-envelope"></i>
-                    </div>
-                </div>
                 <div class="form-group position-relative has-icon-left mb-4">
                     <input type="text" class="form-control form-control-xl" placeholder="Username">
                     <div class="form-control-icon">
@@ -63,7 +56,7 @@
                 <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>
             </form>
             <div class="text-center mt-5 text-lg fs-4">
-                <p class='text-gray-600'>Already have an account? <a href="/page/login" class="font-bold">Log in</a>.</p>
+                <p class='text-gray-600'>Already have an account?<br><a href="/page/login" class="font-bold">Log in</a>.</p>
             </div>
         </div>
     </div>
