@@ -35,16 +35,18 @@
             </div>
             <h1 class="auth-title">Log in.</h1>
 
+            <?php if(isset($errorlogin)){ ?> <div class="alert alert-light-danger">Incorrect Name or Password</div> <?php } ?>
+
             <form action="/login" method="post">
                 @csrf
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input name="profilname" type="text" class="form-control form-control-xl" placeholder="username">
+                    <input name="name" type="text" class="form-control form-control-xl" placeholder="username" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-person"></i>
                     </div>
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input name="profilpass" type="password" class="form-control form-control-xl" placeholder="password">
+                    <input name="pass" type="password" class="form-control form-control-xl" placeholder="password" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
@@ -55,12 +57,7 @@
                 <p class="text-gray-600">Don't have an account?<br><a href="/page/create_user" class="font-bold">Sign up</a>.</p>
             </div>
         </div>
-    </div>
-    <div class="col-lg-7 d-none d-lg-block">
-        <div id="auth-right">
-
-        </div>
-    </div>
+     </div>
 </div>
 
     </div>

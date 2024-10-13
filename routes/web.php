@@ -12,9 +12,11 @@ Route::get('/page/{page}', function ($page) {
 });
 
 Route::post('/conversations', function () {
-    $x = 10;
-    if(isset($_POST["perpage"])) {$x=$_POST["perpage"];}
-    return redirect()->route('routename')->with('friendId', $_POST["friendId"])->with('perpage', $x)->with('friendPhoto', $_POST["friendPhoto"]);
+    $perpage = 10; $friendPhoto = "136.jpg"; $friendId = -1;
+    if(isset($_POST["perpage"])) {$perpage = $_POST["perpage"];}
+    if(isset($_POST["friendId"])) {$friendId = $_POST["friendId"];}
+    if(isset($_POST["friendPhoto"])) {$friendPhoto = $_POST["friendPhoto"];}
+    return redirect()->route('routename')->with('friendId', $friendId)->with('perpage', $perpage)->with('friendPhoto', $friendPhoto);
 });
 Route::get('/form-success', function(){ //Redirect After Post (PRG Pattern)
     return view('conversations', ["friendId"=>session('friendId'), "perpage"=>session('perpage'), "friendPhoto"=>session('friendPhoto')]);
@@ -38,6 +40,7 @@ Route::post('/create_conversation', function () {
     $message = mysqli_real_escape_string($c , $message) ;
     $name_w = mysqli_real_escape_string ($c , $_SESSION["name"]) ;
     $name_r = mysqli_real_escape_string ($c , $r["name"]) ;
+    $img_r = $r["img"] ;
 
     $query="insert into conversations(message,users_id_w,users_name_w,users_img_w,users_id_r,users_name_r,users_img_r)
                         values('".$message."','".$_SESSION["id"]."','".$name_w."','".$_SESSION["photo"]."','".$_POST["friendId"]."','".$name_r."','".$img_r."')";
@@ -296,7 +299,7 @@ Route::post('/signup', function () {
 
         if (session_id()=="") session_start();
 
-        if($_POST["page"]=="create_user" || trim($_POST["name"])!=$_SESSION["name"]) {
+        if($_POST["page"]=="create_user") {
             $d = mysqli_query ($c, "select id from users where name = '".$name."' limit 1");
             if(mysqli_num_rows($d)>0) {
                 return view($_POST["page"], ['error'=>'Already existing name"']);
@@ -323,62 +326,42 @@ Route::post('/signup', function () {
         mysqli_query($c, $query);
         mysqli_close($c);
 
-        if($_POST["page"]=="create_user"){
-            session_unset();
-            session_destroy();
-            return view('signup0', ['name'=>$_POST["name"], 'pass'=>$_POST["pass"]]);
-        }
-        else{
-            $_SESSION["name"]=$_POST["name"];
-            $_SESSION["pass"]=$_POST["pass"];
-            $_SESSION["photo"]=$newimgname;
-
-            return view('index');
-        }
-
-        exit;
+        return redirect()->route('routenamelogin')->with('name', trim($_POST["name"]))->with('pass', $_POST["pass"]);
     }
 });
 
 Route::post('/login', function () {
+    return redirect()->route('routenamelogin')->with('name', $_POST["name"])->with('pass', $_POST["pass"]);
+});
+Route::get('/routenamelogin', function(){ //Redirect After Post (PRG Pattern)
     include ("conn.blade.php");
-
     if(!$c){mysqli_close($c); 
         exit(mysqli_connect_error());
     }
+    $query="select * from users where name='".mysqli_real_escape_string($c, trim(session('name')))."' and pass = '".session('pass')."' limit 1";
+    $d = mysqli_query ($c, $query);
+    
+    if (session_id()=="") session_start();
+    if(mysqli_num_rows($d)==1)
+    {
+        $r= mysqli_fetch_array ($d);
+        $_SESSION["auth"]="true";
+        $_SESSION["id"]=$r["id"];
+        $_SESSION["name"]=$r["name"];
+        $_SESSION["pass"]=$r["pass"];
+        $_SESSION["photo"]=$r["img"];
+        $_SESSION["type"]=$r["type"];
+        $_SESSION["blocked"]=$r["blocked"];
+        $_SESSION["friendId"]=0;
+        $_SESSION["friendPhoto"]="";
+        mysqli_close($c);
+    }
     else
-	{
-        $name = mysqli_real_escape_string ($c , trim($_POST["profilname"])) ;
-        $pass = mysqli_real_escape_string ($c , $_POST["profilpass"] ) ;
+    {
+        mysqli_close($c);
+        return view('login', ['errorlogin'=>'Incorrect Name or Password']);
+    }
 
-        $query="select * from users where name='".$name."' and pass = '".$pass."' limit 1";
-        $d = mysqli_query ($c, $query);
-		if(mysqli_num_rows($d)==1)
-		{
-            $r= mysqli_fetch_array ($d);
-            
-            if (session_id()=="") session_start();
-            $_SESSION["auth"]="true";
-            $_SESSION["id"]=$r["id"];
-            $_SESSION["name"]=$r["name"];
-            $_SESSION["pass"]=$r["pass"];
-            $_SESSION["photo"]=$r["img"];
-            $_SESSION["type"]=$r["type"];
-            $_SESSION["blocked"]=$r["blocked"];
-            $_SESSION["friendId"]=0;
-            $_SESSION["friendPhoto"]="";
-
-            mysqli_close($c);
-            return redirect()->route('routenamelogin');
-		}
-		else
-		{
-            mysqli_close($c);
-            return view('login', ['errorlogin'=>'Incorrect Name or Password']);
-		}
-	}
-});
-Route::get('/form-success2', function(){ //Redirect After Post (PRG Pattern)
     return view('index');
 })->name('routenamelogin');
 
@@ -427,7 +410,7 @@ Route::get('/getmessages', function(Request $request){
 Route::get('/getnotifications', function(){
     include ("conn.blade.php");
     if (session_id()=="") session_start();
-    $q = "select users_id_w, users_name_w, users_img_w, count(id) as count from conversations where red = 0 and users_id_r=".$_SESSION["id"]." GROUP BY users_id_w";
+    $q = "select users_id_w, users_name_w, users_img_w, count(id) as count from conversations where red = 0 and users_id_r=".$_SESSION["id"]." GROUP BY users_id_w ORDER BY id DESC";
     $d = mysqli_query ($c, $q);
     $notifications = array();
     while ($row = mysqli_fetch_array($d, MYSQLI_ASSOC)) {

@@ -34,40 +34,66 @@
                 <a href="/"><img src="/assets/static/images/logo/logo.png" alt="Logo"></a>
             </div>
             <h1 class="auth-title">Sign Up</h1>
-            <form action="/">
+
+            <form action="/signup" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input name="page" type="hidden" value="create_user">
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="text" class="form-control form-control-xl" placeholder="Username">
+                    <input type="text" class="form-control form-control-xl" name="name" placeholder="Username" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-person"></i>
                     </div>
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" class="form-control form-control-xl" placeholder="Password">
+                    <input type="password" class="form-control form-control-xl" name="pass" placeholder="Password" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" class="form-control form-control-xl" placeholder="Confirm Password">
+                    <input type="password" class="form-control form-control-xl" name="pass2" placeholder="Confirm Password" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
                 </div>
-                <button class="btn btn-primary btn-block btn-lg shadow-lg mt-5">Sign Up</button>
+                <div style="">
+                    <div style="display:flex; gap:10px; align-items:center; justify-content:center;">
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('photo').click();" >Pick Photo</button>
+                            <button type="button" class="btn btn-secondary" id="nophoto">No Photo</button>
+                        </div>
+                        <div>
+                            <input name="photo" id="photo" type="file" accept=".jpg,.jpeg,.png,.bmp,.gif" class="form-control" style="display:none;" />
+                            <label for="photo"><img id="img" width="100" height="100" src="/uploads/profiles/136.jpg" alt="photo profile" /></label>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:4px;">
+                    <input type="checkbox" name="conditions" required id="terms"> <label for="terms"> Accept <a href="/page/conditions" style="text-decoration:underline;">Terms &amp; Conditions</a></label>
+                </div>
+                <input type="submit" name="signup" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" value="Sign Up">
             </form>
             <div class="text-center mt-5 text-lg fs-4">
                 <p class='text-gray-600'>Already have an account?<br><a href="/page/login" class="font-bold">Log in</a>.</p>
             </div>
         </div>
     </div>
-    <div class="col-lg-7 d-none d-lg-block">
-        <div id="auth-right">
-
-        </div>
-    </div>
 </div>
 
     </div>
+
+
+    
+<script type="text/javascript">
+    document.getElementById("photo").onchange=function() {
+        document.getElementById("img").setAttribute("src",URL.createObjectURL(document.getElementById("photo").files[0]));
+    }
+    document.getElementById("nophoto").onclick=function() {
+        document.getElementById("photo").value= null;
+        document.getElementById("img").setAttribute("src","/uploads/profiles/136.jpg");
+    }
+</script>
+
 </body>
 
 </html>

@@ -39,7 +39,7 @@
 
 <form id="form1">
     @csrf
-    <textarea name="message" id="message1" maxlength="500" cols="30" rows="6" class="form-control"></textarea>
+    <textarea name="message" id="message1" maxlength="500" class="form-control"></textarea>
 </form>
 <button id="form1btn" class="btn btn-primary btn-lg">
     <img src="/send.svg" alt="Send" width="24" height="24">
@@ -76,10 +76,12 @@
 <?php include ("conn.blade.php");
 $q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
 $d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
-mysqli_close($c);
+mysqli_close($c);?>
 
-if(mysqli_num_rows($d)==0){?>
-    <p style="text-align:center; margin-bottom:0;">No Conversations !</p>
+<p id="noconversations" style="text-align:center; margin-bottom:0;">No Conversations !</p>
+
+<?php if(mysqli_num_rows($d)==0){?>
+    <script>document.getElementById('noconversations').style.display = ''</script>
 <?php  }else{
 while($r= mysqli_fetch_array($d))
 {
@@ -210,6 +212,7 @@ while($r= mysqli_fetch_array($d))
         { newDiv.querySelector(".newmessage").innerHTML = message; }
         else{ newDiv.querySelector(".newmessage").innerHTML = message + '<span onclick="deletemessage(this)" data-value="'+id+'" class="delete" >X</span>'; }
         document.getElementById("messages").prepend(newDiv);
+        document.getElementById('noconversations').style.display = 'none';
     }
 </script>
 

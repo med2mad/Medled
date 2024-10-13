@@ -12,7 +12,7 @@
 include ("conn.blade.php");
 $d=mysqli_query ($c, "select friends from users WHERE id='".$_SESSION["id"]."'");
 $data= mysqli_fetch_array($d);
-$MyfriendsArray = json_decode($data["friends"], true);
+$MyfriendsArray = json_decode($data["friends"]?$data["friends"]:'[]', true);
 
 $q = "select count(id) from users where id<>'".$_SESSION["id"]."'";
 $q .= " AND name like '%".$searchName."%'";
@@ -164,6 +164,9 @@ $d1 = mysqli_query ($c, $q." ORDER BY id DESC LIMIT $perpage OFFSET $debut");
 
 mysqli_close($c);
 
+if(mysqli_num_rows($d1)==0){?>
+    <div class="userpagination">No Friends !</p>
+<?php  }else{
 while($r= mysqli_fetch_array ($d1))
 { 
     $name = htmlspecialchars($r["name"]);
@@ -199,7 +202,7 @@ while($r= mysqli_fetch_array ($d1))
                         @csrf
                         <input type="hidden" name="friendId" value="<?= $r["id"] ?>">
                         <input type="hidden" name="friendPhoto" value="<?= $r["img"] ?>">
-                        <button type="submit" class="btn btn-success chatbtn">Chat Room</button> 
+                        <button type="submit" class="btn btn-primary" id="chatbtn2">Chat Room</button> 
                     </form>
                 </div>
                 <?php $_SESSION["select"] .= ','.$r["id"] ?>
@@ -249,7 +252,7 @@ while($r= mysqli_fetch_array ($d1))
 
 </div>
 
-<?php } ?>
+<?php }} ?>
 
 
         </div>

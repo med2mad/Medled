@@ -98,11 +98,11 @@
 
 .chat2{ display: none; }
 
-.chat2 .chatbtn{
-    border-radius:8px !important;   
-    width: 240px; height: 60px;
-    box-shadow: none;
-    font-weight: normal !important;
+#chatbtn2{
+    margin: 5px !important;
+    font-size: 1.2rem !important;
+    padding: 0.6rem 4rem !important;
+    margin: 5px !important;
 }
 
 #form1btn{

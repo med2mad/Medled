@@ -41,10 +41,10 @@
         Any disrespectful act towards a user or admin is considered fraud.
     </li>
     <li>
-        Copyrighted material without permission (is considered prohibited Content).
+        Copyrighted material without permission is considered prohibited Content.
     </li>
     <li>
-        In case lots of users blocked or reported you, admins check if the report deserves extreme engagement.
+        In case lots of users blocked or reported you, admins check if the reports deserve extreme engagement.
     </li>
     <li>
         If the platform admins realise that the platform is being used for perposes other than what it is meant for,
