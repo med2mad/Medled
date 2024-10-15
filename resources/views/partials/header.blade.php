@@ -216,7 +216,7 @@
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton" style="min-width: 11rem;">
                                     <li>
-                                        <a class="dropdown-item" href="#">
+                                        <a class="dropdown-item" href="/page/edit_user">
                                             <i class="icon-mid bi bi-person me-2"></i>My Profile
                                         </a>
                                     </li>
@@ -270,7 +270,7 @@
     </li>
 </div>
 
-<?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true") { ?>
+<?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["blocked"]) && $_SESSION["blocked"]==0) { ?>
 
     <script>
         function updateTime() {

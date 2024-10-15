@@ -17,7 +17,7 @@
     mysqli_close($c);
 
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
-        exit("Activate your account !");
+        exit("Login !");
     }
 ?>
 
@@ -78,12 +78,9 @@ $q = "select id, users_id_w, users_name_w, users_img_w, message from conversatio
 $d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
 mysqli_close($c);?>
 
-<p id="noconversations" style="text-align:center; margin-bottom:0;">No Conversations !</p>
+<div id="noconversations" style="text-align:center; margin-bottom:0; <?= mysqli_num_rows($d)!=0 ? 'display:none !important;':'' ?>">No Conversations !</div>
 
-<?php if(mysqli_num_rows($d)==0){?>
-    <script>document.getElementById('noconversations').style.display = ''</script>
-<?php  }else{
-while($r= mysqli_fetch_array($d))
+<?php while($r= mysqli_fetch_array($d))
 {
     $messageid = $r["id"];
     $id = $r["users_id_w"];
@@ -111,7 +108,7 @@ while($r= mysqli_fetch_array($d))
 <?php } ?>
 </div>
 
-<?php }} ?>
+<?php } ?>
 
             </div>
         </div>
@@ -165,6 +162,8 @@ while($r= mysqli_fetch_array($d))
         </div>
     </div>
 </div>
+
+<?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["blocked"]) && $_SESSION["blocked"]==0) { ?>
 
 <script>
     function deletemessage(span){
@@ -240,5 +239,7 @@ while($r= mysqli_fetch_array($d))
 
     setInterval(updateStatus, 30000); //every 30 seconds
 </script>
+
+<?php } ?>
 
 @include( 'partials.footer' )

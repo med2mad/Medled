@@ -1,3 +1,11 @@
+<?php
+if (session_id()=="") session_start();
+
+    if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
+        exit("404");
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,25 +50,30 @@
             <div class="auth-logo">
                 <a href="/"><img src="/assets/static/images/logo/logo.png" alt="Logo"></a>
             </div>
-            <h1 class="auth-title">Sign Up</h1>
+            <h1 class="auth-title">Edit Profile</h1>
 
             <form action="/signup" method="POST" enctype="multipart/form-data">
                 @csrf
-                <input name="page" type="hidden" value="create_user">
+                <input name="page" type="hidden" value="edit">
+                <?php
+                    $name = htmlspecialchars($_SESSION["name"]);    
+                    $pass = $_SESSION["pass"];
+                    $photo = $_SESSION["photo"];
+                ?>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="text" class="form-control form-control-xl" name="name" placeholder="Username" required maxlength="20" minlength="5">
+                    <input type="text" class="form-control form-control-xl" name="name" value="<?= $name ?>" placeholder="Username" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-person"></i>
                     </div>
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" class="form-control form-control-xl" name="pass" placeholder="Password" required maxlength="20" minlength="5">
+                    <input type="password" class="form-control form-control-xl" name="pass" value="<?= $pass ?>" placeholder="Password" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
                 </div>
                 <div class="form-group position-relative has-icon-left mb-4">
-                    <input type="password" class="form-control form-control-xl" name="pass2" placeholder="Confirm Password" required maxlength="20" minlength="5">
+                    <input type="password" class="form-control form-control-xl" name="pass2" value="<?= $pass ?>" placeholder="Confirm Password" required maxlength="20" minlength="5">
                     <div class="form-control-icon">
                         <i class="bi bi-shield-lock"></i>
                     </div>
@@ -73,18 +86,12 @@
                         </div>
                         <div>
                             <input name="photo" id="photo" type="file" accept=".jpg,.jpeg,.png,.bmp,.gif" class="form-control" style="display:none;" />
-                            <label for="photo"><img id="img" class="photo" width="100" height="100" src="/uploads/profiles/136.jpg" alt="photo profile" /></label>
+                            <label for="photo"><img id="img" class="photo" src="/uploads/profiles/<?= $photo ?>" alt="photo profile" /></label>
                         </div>
                     </div>
                 </div>
-                <div style="margin-top:4px;">
-                    <input type="checkbox" name="conditions" required id="terms"> <label for="terms"> Accept <a href="/page/conditions" style="text-decoration:underline;">Terms &amp; Conditions</a></label>
-                </div>
-                <input type="submit" name="signup" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" value="Sign Up">
+                <input type="submit" name="update" class="btn btn-primary btn-block btn-lg shadow-lg mt-5" value="Update">
             </form>
-            <div class="text-center mt-5 text-lg fs-4">
-                <p class='text-gray-600'>Already have an account?<br><a href="/page/login" class="font-bold">Log in</a>.</p>
-            </div>
         </div>
     </div>
 </div>

@@ -85,7 +85,7 @@ Route::post('/create_gallery', function () {
             }
         }
         else{
-            return view("create_gallery");
+            return view("gallery");
         }
     
         include ("conn.blade.php");
@@ -299,7 +299,7 @@ Route::post('/signup', function () {
 
         if (session_id()=="") session_start();
 
-        if($_POST["page"]=="create_user") {
+        if($_POST["page"]=="create_user" || trim($_POST["name"])!=$_SESSION["name"]) {
             $d = mysqli_query ($c, "select id from users where name = '".$name."' limit 1");
             if(mysqli_num_rows($d)>0) {
                 return view($_POST["page"], ['error'=>'Already existing name"']);

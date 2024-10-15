@@ -2,7 +2,7 @@
 
 <?php
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
-        exit("Login first !");
+        exit("Login !");
     }
     $searchName = isset($_GET["searchName"]) ? trim($_GET["searchName"]):''; //if search happend
     $include = isset($_GET["include"]) && (($_GET["include"]=="on" ||  $_GET["include"]==1 ||  $_GET["include"]=='checked'));
@@ -117,7 +117,7 @@ else{
 <div class="card" style="border:1px solid rgb(230,230,230);"> <?php $_SESSION["select"]='' ?>
     <div class="card-body">
 
-<nav class="userpagination" aria-label="Page navigation example">
+<nav <?php if($_GET["title"]=="Users") { ?> class="userpagination" <?php } ?> aria-label="Page navigation example">
     <ul class="pagination pagination-primary" style="justify-content:center; flex-wrap:wrap;">
         <li class="page-item">
             <span class="page-link" onclick="pagelink(1, <?= $perpage ?>)">
@@ -164,8 +164,14 @@ $d1 = mysqli_query ($c, $q." ORDER BY id DESC LIMIT $perpage OFFSET $debut");
 
 mysqli_close($c);
 
-if(mysqli_num_rows($d1)==0){?>
-    <div class="userpagination">No Friends !</p>
+if(mysqli_num_rows($d1)==0){
+
+if($_GET["title"]=="Users") { ?>
+    <div class="userpagination" style="margin-bottom:1rem;">No Users !</div>
+<?php }else{ ?>
+    <div style="margin-bottom:1rem;">No Friends !</div>
+<?php } ?>
+
 <?php  }else{
 while($r= mysqli_fetch_array ($d1))
 { 
@@ -181,7 +187,7 @@ while($r= mysqli_fetch_array ($d1))
 
     <div id="avatar<?= $r["id"] ?>">
         <div>
-            <img class="usersphoto" src="/uploads/profiles/<?= $r["img"] ?>" alt="photo<?= $r["id"] ?>">
+            <img src="/uploads/profiles/<?= $r["img"] ?>" class="usersphoto" alt="photo<?= $r["id"] ?>">
         </div>
     </div>
     <div style="flex-grow:1;"> 
@@ -202,7 +208,7 @@ while($r= mysqli_fetch_array ($d1))
                         @csrf
                         <input type="hidden" name="friendId" value="<?= $r["id"] ?>">
                         <input type="hidden" name="friendPhoto" value="<?= $r["img"] ?>">
-                        <button type="submit" class="btn btn-primary" id="chatbtn2">Chat Room</button> 
+                        <button type="submit" id="chatbtn2" <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?> class="btn btn-primary" <?php }else{ ?> class="btn btn-secondary disabled" <?php } ?>>Chat Room</button> 
                     </form>
                 </div>
                 <?php $_SESSION["select"] .= ','.$r["id"] ?>
@@ -216,11 +222,11 @@ while($r= mysqli_fetch_array ($d1))
                 <?php } ?>
             <?php } ?>
 
-            <?php if($imAdmin) { ?>
+            <?php if($_GET["title"]=="Users" && $imAdmin) { ?>
                 <?php if($r["blocked"]==1) { ?>
-                    <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white;">UnBlock</a> | 
+                    <a href="/unblockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white;padding: 6px 5px;">UnBlock</a> | 
                 <?php }else{ ?>
-                    <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white;">Block</a> | 
+                    <a href="/blockuser?id=<?= $r["id"] ?>&title=<?= $_GET["title"] ?>" class="btn" style="background-color:purple; color:white; padding: 6px 5px;">Block</a> | 
                 <?php } ?>
             <?php } ?>
             
@@ -244,7 +250,7 @@ while($r= mysqli_fetch_array ($d1))
                 @csrf
                 <input type="hidden" name="friendId" value="<?= $r["id"] ?>">
                 <input type="hidden" name="friendPhoto" value="<?= $r["img"] ?>">
-                <button type="submit" class="btn btn-success chatbtn">Chat<br>Room</button> 
+                <button type="submit" <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?> class="btn chatbtn" <?php }else{ ?> class="btn btn-primary disabled chatbtn-disabled" style="background-color:gray;" <?php } ?>>Chat<br>Room</button> 
             </form>
         </div>
         <?php $_SESSION["select"] .= ','.$r["id"] ?>
@@ -257,8 +263,7 @@ while($r= mysqli_fetch_array ($d1))
 
         </div>
 
-
-<nav class="userpagination" aria-label="Page navigation example">
+<nav <?php if($_GET["title"]=="Users") { ?> class="userpagination" <?php } ?> aria-label="Page navigation example">
     <ul class="pagination pagination-primary" style="justify-content:center; flex-wrap:wrap;">
         <li class="page-item">
             <span class="page-link" onclick="pagelink(1, <?= $perpage ?>)">
@@ -280,9 +285,6 @@ while($r= mysqli_fetch_array ($d1))
     </ul>
 </nav>
 
-
-            </div>
-        </div>
 
     </section>
 </div>

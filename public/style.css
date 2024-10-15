@@ -79,6 +79,7 @@
 
 
 .chatbtn{
+    color: white;
     font-weight: bolder !important;
     font-size: larger;
     line-height: normal;
@@ -89,7 +90,20 @@
     width: 100px; height: 100px;
     margin:5px !important;
 }
+.chatbtn-disabled{
+    color: white;
+    font-weight: bolder !important;
+    font-size: larger;
+    line-height: normal;
+    background-color: 'gray' !important;
+    border-radius:50% !important;
+    padding:10px 10px !important;
+    border: solid #444466 !important;
+    width: 100px; height: 100px;
+    margin:5px !important;
+}
 .chatbtn:hover{
+    color: white;
     background: linear-gradient(to right, #687dd8, #1e2761) !important;
 }
 .chatbtn:active{
@@ -98,12 +112,12 @@
 
 .chat2{ display: none; }
 
-#chatbtn2{
+.chat2 #chatbtn2{
     margin: 5px !important;
     font-size: 1.2rem !important;
-    padding: 0.6rem 4rem !important;
-    margin: 5px !important;
+    width:215px !important; height:50px !important;
 }
+
 
 #form1btn{
     width:200px;
@@ -337,4 +351,5 @@
     #datefilter{
         display: none;
     }
+
 }

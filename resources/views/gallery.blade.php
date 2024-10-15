@@ -9,7 +9,7 @@
     // if (session_id()=="") session_start();
 
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
-        exit("Login first !");
+        exit("Login !");
     }
 
     if($_GET["user"] != $_SESSION["id"] && isset($_SESSION["type"]) && $_SESSION["type"]=="user") { //do not check if its your gallery or if i'm admin
@@ -92,7 +92,7 @@
                         if(isset($_GET["date2"]) && !empty($_GET["date2"])){
                             $query = $query . " and time <= '" . $_GET["date2"] . " 23:59:59'";
                         }
-                        $query = $query . " order by time desc";
+                        $query = $query . " order by id desc";
                         $query = $query . " limit $debut,$perpage";
                         $d=mysqli_query ($c, $query);
                         mysqli_close($c);
@@ -108,7 +108,7 @@
                                         <span class="no-click" ><?= date ( "d/m/Y" , strtotime($r["time"]) ) ?></span>
                                         <?php if(isset($_SESSION["id"]) && $_SESSION["id"]==$_GET["user"] || isset($_SESSION["type"]) && $_SESSION["type"]=="admin"){ ?>
                                             <div class="mb-2">
-                                                <a class="btn btn-danger" href="/deletegallery?id=<?= $r["id"] ?>&user=<?= $_SESSION["id"] ?>&name=<?= $name ?>&img=<?= $r["img"] ?>&page=<?= $currentpage ?>&perpage=<?= $perpage ?>" onclick="event.cancelBubble = true;return confirm('Delete this image ?');event.cancelBubble = true;">Delete</a>
+                                                <a class="btn btn-danger" href="/deletegallery?id=<?= $r["id"] ?>&user=<?= $_GET["user"] ?>&name=<?= $name ?>&img=<?= $r["img"] ?>&page=<?= $currentpage ?>&perpage=<?= $perpage ?>" onclick="event.cancelBubble = true;return confirm('Delete this image ?');event.cancelBubble = true;">Delete</a>
                                             </div>
                                         <?php } ?>
                                     </div>
