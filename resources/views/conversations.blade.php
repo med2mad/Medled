@@ -1,6 +1,5 @@
 @include( 'partials.header' )
 <?php
-    // if (session_id()=="") session_start();
     if((!isset($_SESSION["friendId"]) || $_SESSION["friendId"]=='') && (!isset($friendId) || $friendId==''))
     { echo '<script>window.location.href = "/page/users?title=Friends";</script>'; exit;}
     if(isset($friendId) && $friendId!=''){$_SESSION["friendId"]=$friendId;}

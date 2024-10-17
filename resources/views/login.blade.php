@@ -38,6 +38,7 @@
             <?php if(isset($errorlogin)){ ?> <div class="alert alert-light-danger">Incorrect Name or Password</div> <?php } ?>
 
             <form action="/login" method="post">
+            <input name="page" type="hidden" value="login"/>
                 @csrf
                 <div class="form-group position-relative has-icon-left mb-4">
                     <input name="name" type="text" class="form-control form-control-xl" placeholder="username" required maxlength="20" minlength="5">

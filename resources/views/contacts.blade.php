@@ -56,7 +56,7 @@
                   </svg>
                 </div> <!-- /.icon -->
                 <div class="service-contents">
-                  <p>Portfolio website</p>
+                  <p>Profile website</p>
                 </div> <!-- /.service-contents-->
               </div> <!-- /.service -->
             </div>
@@ -69,7 +69,7 @@
                   </svg>
                 </div> <!-- /.icon -->
                 <div class="service-contents">
-                  <p>info@yourdomain.com</p>
+                  <p>mohamed.leghdaich@gmail.com</p>
                 </div> <!-- /.service-contents-->
               </div> <!-- /.service -->
             </div>
@@ -82,7 +82,7 @@
                   </svg>
                 </div> <!-- /.icon -->
                 <div class="service-contents">
-                  <p>+1 294 3925 3939</p>
+                  <p>06 44 63 86 60</p>
                 </div> <!-- /.service-contents-->
               </div> <!-- /.service -->
             </div>
@@ -95,7 +95,7 @@
                     </svg>
                   </div> <!-- /.icon -->
                   <div class="service-contents mb-4">
-                    <p>43 Raymouth Rd. Baltemoer, London 3910</p>
+                    <p>Lot SIDI ABDERRAHMANE Rue 31 Nr 61 OULFA CASABLANCA</p>
                   </div> <!-- /.service-contents-->
                 </div> <!-- /.service -->
               </div>
@@ -106,8 +106,7 @@
           <div class="">
             <h2 class="mb-4 mt-4 section-title">About Me</h2>
             <p>
-              "Mohamed Leghdaich", a programmer and web designed. Builder of the "GamesMan" platform with the goal to contribute to the gaming comunity
-              and to the move of preserving web content that becomes obsolete by the evolution of the internet (especialy old games). <br>
+              "Mohamed Leghdaich", a programmer and web designed. Builder of the "Medled Social" platform.<br>
               If interested in my web developpement services, or for collaboration, or just to hang out and have a chat, please leave a message.
             </p>
           </div>

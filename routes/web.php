@@ -326,14 +326,19 @@ Route::post('/signup', function () {
         mysqli_query($c, $query);
         mysqli_close($c);
 
-        return redirect()->route('routenamelogin')->with('name', trim($_POST["name"]))->with('pass', $_POST["pass"]);
+        return redirect()->route('routenamelogin')->with('name', trim($_POST["name"]))->with('pass', $_POST["pass"])->with('page', $_POST["page"]);
     }
 });
 
 Route::post('/login', function () {
-    return redirect()->route('routenamelogin')->with('name', $_POST["name"])->with('pass', $_POST["pass"]);
+    return redirect()->route('routenamelogin')->with('name', $_POST["name"])->with('pass', $_POST["pass"])->with('page', $_POST["page"]);
 });
 Route::get('/routenamelogin', function(){ //Redirect After Post (PRG Pattern)
+    if (session_id()=="") session_start();
+    if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && session('page')==null) {
+        return view('index');
+    }
+
     include ("conn.blade.php");
     if(!$c){mysqli_close($c); 
         exit(mysqli_connect_error());
@@ -341,7 +346,6 @@ Route::get('/routenamelogin', function(){ //Redirect After Post (PRG Pattern)
     $query="select * from users where name='".mysqli_real_escape_string($c, trim(session('name')))."' and pass = '".session('pass')."' limit 1";
     $d = mysqli_query ($c, $query);
     
-    if (session_id()=="") session_start();
     if(mysqli_num_rows($d)==1)
     {
         $r= mysqli_fetch_array ($d);
