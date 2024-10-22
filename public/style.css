@@ -250,7 +250,6 @@
     font-weight: bold;
     cursor: pointer;
 }
-
 .close:hover,
 .close:focus {
     color: #ccc;

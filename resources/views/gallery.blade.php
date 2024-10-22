@@ -192,14 +192,14 @@
     }
 
 
-    var modal = document.getElementById('myModal');
+    var myModal = document.getElementById('myModal');
     var img = document.getElementById('image1');
     var modalImg = document.getElementById('imgModal');
 
     var images = document.getElementsByClassName('gallery-img');
     for (var i = 0; i < images.length; i++) {
         images[i].onclick = function() {
-            modal.style.display = 'flex';
+            myModal.style.display = 'flex';
             modalImg.src = this.src;  // Set the clicked image as the modal image
         }
     }
@@ -207,13 +207,13 @@
     //<span> element that closes the modal
     var closeSpan = document.getElementsByClassName('close')[0];
     closeSpan.onclick = function() {
-        modal.style.display = 'none';
+        myModal.style.display = 'none';
     }
 
-    // Optional: Close the modal when clicking outside of the modal content
+    //Close the modal when clicking outside of the modal content
     window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = 'none';
+        if (event.target == myModal) {
+            myModal.style.display = 'none';
         }
     }
 </script>
