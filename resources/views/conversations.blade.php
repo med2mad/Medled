@@ -12,7 +12,7 @@
     else{$_SESSION["perpage"]=10;}
     
     include ("conn.blade.php");
-    mysqli_query ($c, "update conversations set red=1 where users_id_r='".$_SESSION["id"]."'" ) ;
+    mysqli_query ($c, "update conversations set red=1 where users_id_w=".$_SESSION["friendId"]." and users_id_r=".$_SESSION["id"]) ;
     mysqli_close($c);
 
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
@@ -20,7 +20,7 @@
     }
 ?>
 
-<div class="page-heading">
+<div class="page-heading" style="margin-bottom: 0;">
     <div class="page-title">
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
@@ -35,14 +35,6 @@
     </div>
     <section class="section">
 
-
-<form id="form1">
-    @csrf
-    <textarea name="message" id="message1" maxlength="500" class="form-control"></textarea>
-</form>
-<button id="form1btn" class="btn btn-primary btn-lg">
-    <img src="/send.svg" alt="Send" width="24" height="24">
-</button>
 
 <div class="card mb-0" style="margin-left:auto; width:200px;">
 <div class="card-body messagesCard" style="padding:10px;">
@@ -79,7 +71,14 @@ mysqli_close($c);?>
 
 <div id="noconversations" style="text-align:center; margin-bottom:0; <?= mysqli_num_rows($d)!=0 ? 'display:none !important;':'' ?>">No Conversations !</div>
 
-<?php while($r= mysqli_fetch_array($d))
+<?php
+$rows = [];
+while ($row = mysqli_fetch_array($d)) {
+    $rows[] = $row;
+}
+$rows = array_reverse($rows);
+
+foreach ($rows as $r)
 {
     $messageid = $r["id"];
     $id = $r["users_id_w"];
@@ -115,6 +114,15 @@ mysqli_close($c);?>
     </section>
 </div>
 
+<div id="sendmsg">
+    <form id="form1">
+        @csrf
+        <textarea rows="2" name="message" id="message1" maxlength="500" class="form-control"></textarea>
+    </form>
+    <button id="form1btn" class="btn btn-primary btn-lg">
+        <img src="/send.svg" alt="Send" width="24" height="24">
+    </button>
+</div>
 <script>
     function refresh(){
         const perpageform = document.getElementById("perpageform");
@@ -127,15 +135,18 @@ mysqli_close($c);?>
 <script>
     tinymce.init({
         selector: '#message1',
-        plugins: [
-          'lists','link','emoticons',
-        ],
-        toolbar:'bold underline forecolor backcolor ' 
-                + 'emoticons bullist numlist checklist',
+        plugins: ['link','emoticons'],
+        toolbar:'bold underline forecolor backcolor emoticons',
         font_size_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt',
         menubar: false,
-        height: 220, 
+        height: 150, 
+        resize: false,
         content_style: "p { margin: 0; }",
+        setup: function(editor) {
+            editor.on('init', function() {
+                window.location.href = "#footer";
+            });
+        },
     });
 </script>
 
@@ -209,7 +220,7 @@ mysqli_close($c);?>
         if(id==0)
         { newDiv.querySelector(".newmessage").innerHTML = message; }
         else{ newDiv.querySelector(".newmessage").innerHTML = message + '<span onclick="deletemessage(this)" data-value="'+id+'" class="delete" >X</span>'; }
-        document.getElementById("messages").prepend(newDiv);
+        document.getElementById("messages").append(newDiv);
         document.getElementById('noconversations').style.display = 'none';
     }
 </script>
@@ -224,7 +235,7 @@ mysqli_close($c);?>
     function updateStatus() {
         fetch("/gettime?q=<?=$_SESSION["friendId"]?>").then(response => response.json())
         .then(response=>{
-            if(timeDifference(response.curranttime, response.oldtime) > 0.5){ //not active if more that half a minute
+            if(timeDifference(false && response.curranttime, response.oldtime) > 0.5){ //not active if more that half a minute
                 document.getElementById('active').style.display='none';
                 document.getElementById('inactive').style.display='';
             }
@@ -241,4 +252,20 @@ mysqli_close($c);?>
 
 <?php } ?>
 
-@include( 'partials.footer' )
+
+
+
+
+<?php ///////////////////////////////////////////////footer/////////////////////////////////////////////////////////////// ?>
+
+
+
+<div id="footer" style="height:120px;"></div>
+</div>
+</div>
+</div>
+<script src="/assets/static/js/components/dark.js"></script>
+<script src="/assets/extensions/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="/assets/compiled/js/app.js"></script>
+</body>
+</html>

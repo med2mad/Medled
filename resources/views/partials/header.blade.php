@@ -254,26 +254,28 @@
                         <?php } ?>
                     </div>
                 </nav>
+
+                
+                <div id="notificationsource" style="display:none;">
+                    <li class="dropdown-item notification-item">
+                        <a class="d-flex align-items-center" href="#">
+                            <div class="avatar avatar-md">
+                                <img>
+                            </div>
+                            <div class="notification-text ms-1">
+                                <p class="notification-title font-bold"></p>
+                                <form action="/conversations" method="post">
+                                    @csrf
+                                    <input type="hidden" name="friendId" id="inputid">
+                                    <input type="hidden" name="friendPhoto" id="inputphoto">
+                                </form>
+                            </div>
+                        </a>
+                    </li>
+                </div>
+
             </header>
             <div id="main-content">
-
-<div id="notificationsource" style="display:none;">
-    <li class="dropdown-item notification-item">
-        <a class="d-flex align-items-center" href="#">
-            <div class="avatar avatar-md">
-                <img>
-            </div>
-            <div class="notification-text ms-1">
-                <p class="notification-title font-bold"></p>
-                <form action="/conversations" method="post">
-                    @csrf
-                    <input type="hidden" name="friendId" id="inputid">
-                    <input type="hidden" name="friendPhoto" id="inputphoto">
-                </form>
-            </div>
-        </a>
-    </li>
-</div>
 
 <?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["blocked"]) && $_SESSION["blocked"]==0) { ?>
 

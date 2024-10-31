@@ -3,7 +3,7 @@
 <h3>Terms &amp; Conditions</h3>
 
 <p style="text-align:center; font-size:1.5rem; font-style:italic; font-weight:bold; margin-top:3rem;">
-    Here are the terms you agreed to while signing up :
+    Here are the terms you agree to while signing up :
 </p>
 <div>
     <div class="terms">

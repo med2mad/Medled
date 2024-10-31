@@ -118,13 +118,6 @@
     width:215px !important; height:50px !important;
 }
 
-
-#form1btn{
-    width:200px;
-    height:50px;
-    padding:10px;
-}
-
 .searchcard{
     margin-right:auto;
     width:350px;
@@ -176,6 +169,22 @@
     width:50px;
     height:50px;
 }
+.tox.tox-tinymce { border-radius: 0 !important;}
+#sendmsg{
+    position:fixed;
+    bottom:0px;
+    left: 330px;
+    right: 30px;
+    display:flex;
+    justify-content: center;
+}
+#form1{
+    flex: 1;
+}
+#form1btn{
+    width:75px !important;
+    align-self: stretch;
+}
 
 .messagerow .photo{
     border:solid;
@@ -187,7 +196,7 @@
 }
 
 .messagesCard{
-    box-shadow: -2px -2px #dbdbdb !important;
+    box-shadow: 0 0 4px 4px #dbdbdb !important;
     border-radius: 10px 0px 0px 0px !important;
     border-right:solid 1px rgba(128, 128, 128, 0.397);
     border-bottom:solid 1px rgba(128, 128, 128, 0.397);
@@ -267,6 +276,9 @@
     .burger-btn{
         display:inline-block !important;
     }
+    #sendmsg{
+        left: 30px;
+    }
 }
 
 
@@ -308,14 +320,14 @@
     .chat1{ display: none; }
     .chat2{ display: block; }
 
-    #form1btn{
-        width:100px !important;
+    #sendmsg{
+        left: 30px;
+        right: 30px;
     }
 
     #messages{
         padding-left: 0;
         padding-right: 0;
-       
     }
 
     .messagerow .photo{
