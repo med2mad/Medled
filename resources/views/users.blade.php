@@ -299,7 +299,7 @@ while($r= mysqli_fetch_array ($d1))
     }
 
     function updateStatus() {
-        fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => response.json())
+        fetch("/gettimes?q=<?=$_SESSION["select"]?>").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
         .then(response=>{
             for (let key in response.friends) {
                 if(timeDifference(response.curranttime, response.friends[key]) > 0.5){ //not active if more that half a minute
@@ -313,7 +313,9 @@ while($r= mysqli_fetch_array ($d1))
                     document.getElementById('inactive'+key).style.display='none';
                 }
             }
-        })
+        }).catch(error=>{
+            window.location.href = `/logout`;
+        });
     }
     updateStatus();
 

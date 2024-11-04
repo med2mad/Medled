@@ -7,6 +7,10 @@ Route::get('/', function () {
     return view('index');
 });
 
+Route::get('/room', function (Request $request) {
+    return view('room', ['room'=>$request->input('room')]);
+});
+
 Route::get('/page/{page}', function ($page) {
     return view($page);
 });
@@ -377,56 +381,81 @@ Route::get('/logout', function () {
 });
 
 Route::get('/gettime', function(Request $request){
-    include ("conn.blade.php");
-    $d = mysqli_query ($c, "select time from users where id = ".$request->input('q'));
-    mysqli_close($c);
-    $r = mysqli_fetch_array($d);
-    return ["oldtime"=>$r["time"], "curranttime"=>time()];
+    if (session_id()=="") session_start();
+    if (isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["id"]) && $_SESSION["id"]){
+        include ("conn.blade.php");
+        $d = mysqli_query ($c, "select time from users where id = ".$request->input('q'));
+        mysqli_close($c);
+        $r = mysqli_fetch_array($d);
+        return ["oldtime"=>$r["time"], "curranttime"=>time()];
+    }
+    else{
+        return response()->json(['error' => 'login'], 401);
+    }
 });
 
 Route::get('/gettimes', function(Request $request){
-    include ("conn.blade.php");
-    $d = mysqli_query ($c, "select id,time from users where id IN (-1".$request->input('q').")");
-    mysqli_close($c);
-    $friends = [];
-    while($r = mysqli_fetch_array($d)){
-        $friends[$r["id"]] = $r["time"];
+    if (session_id()=="") session_start();
+    if (isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["id"]) && $_SESSION["id"]){
+        include ("conn.blade.php");
+        $d = mysqli_query ($c, "select id,time from users where id IN (-1".$request->input('q').")");
+        mysqli_close($c);
+        $friends = [];
+        while($r = mysqli_fetch_array($d)){
+            $friends[$r["id"]] = $r["time"];
+        }
+        return  ["friends"=>$friends, "curranttime"=>time()];
     }
-
-    return  ["friends"=>$friends, "curranttime"=>time()];
+    else{
+        return response()->json(['error' => 'login'], 401);
+    }
 });
 
 Route::get('/getmessages', function(Request $request){
-    include ("conn.blade.php");
     if (session_id()=="") session_start();
-    $q = "select id,message from conversations where red = 0 and users_id_w = " . $request->input('friendId') ." and users_id_r = " . $_SESSION["id"] . " ORDER BY id DESC";
-    $d = mysqli_query ($c, $q);
-    $messages = [];
-    while($r = mysqli_fetch_array($d)){
-        $messages[$r["id"]] = $r["message"];
+    if (isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["id"]) && $_SESSION["id"]){
+        include ("conn.blade.php");
+        $q = "select id,message from conversations where red = 0 and users_id_w = " . $request->input('friendId') ." and users_id_r = " . $_SESSION["id"] . " ORDER BY id DESC";
+        $d = mysqli_query ($c, $q);
+        $messages = [];
+        while($r = mysqli_fetch_array($d)){
+            $messages[$r["id"]] = $r["message"];
+        }
+        mysqli_query ($c, "update conversations set red=1 where users_id_w=" . $request->input('friendId') . " and users_id_r = " . $_SESSION["id"] ) ;
+        mysqli_close($c);
+        return $messages;
     }
-
-    mysqli_query ($c, "update conversations set red=1 where users_id_w=" . $request->input('friendId') . " and users_id_r = " . $_SESSION["id"] ) ;
-    mysqli_close($c);
-    return $messages;
+    else{
+        return response()->json(['error' => 'login'], 401);
+    }
 });
 
 Route::get('/getnotifications', function(){
-    include ("conn.blade.php");
     if (session_id()=="") session_start();
-    $q = "select users_id_w, users_name_w, users_img_w, count(id) as count from conversations where red = 0 and users_id_r=".$_SESSION["id"]." GROUP BY users_id_w ORDER BY id DESC";
-    $d = mysqli_query ($c, $q);
-    $notifications = array();
-    while ($row = mysqli_fetch_array($d, MYSQLI_ASSOC)) {
-        $notifications[] = $row;
+    if (isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["id"]) && $_SESSION["id"]){
+        include ("conn.blade.php");
+        $q = "select users_id_w, users_name_w, users_img_w, count(id) as count from conversations where red = 0 and users_id_r=".$_SESSION["id"]." GROUP BY users_id_w ORDER BY id DESC";
+        $d = mysqli_query ($c, $q);
+        $notifications = array();
+        while ($row = mysqli_fetch_array($d, MYSQLI_ASSOC)) {
+            $notifications[] = $row;
+        }
+        return $notifications;
     }
-    return $notifications;
+    else{
+        return response()->json(['error' => 'login'], 401);
+    }
 });
 
 Route::get('/updatetime', function(){
-    include ("conn.blade.php");
     if (session_id()=="") session_start();
-    mysqli_query ($c, "update users set time=UNIX_TIMESTAMP() where id=" . $_SESSION["id"]);
-    mysqli_close($c);
-    return ["1"=>1];
+    if (isset($_SESSION["auth"]) && $_SESSION["auth"]=="true" && isset($_SESSION["id"]) && $_SESSION["id"]){
+        include ("conn.blade.php");
+        mysqli_query ($c, "update users set time=UNIX_TIMESTAMP() where id=" . $_SESSION["id"]);
+        mysqli_close($c);
+        return ["1"=>1];
+    }
+    else{
+        return response()->json(['error' => 'login'], 401);
+    }
 });

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/assets/compiled/css/app.css">
     <link rel="stylesheet" href="/assets/compiled/css/app-dark.css">
     <link rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .svg-inline--fa{
             width: 1.2rem !important;
@@ -115,6 +116,13 @@
             </li>
 
             <li class="sidebar-item  ">
+                <a id="inputLink" class='sidebar-link' style="cursor:pointer;">
+                    <i class="bi bi-globe-americas"></i>
+                    <span>Group chat : @isset($room) {{$room}} @endisset</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item  ">
                 <a href="/page/gallery?user=<?= $_SESSION["id"] ?>" class='sidebar-link'>
                     <i class="bi bi-image-fill"></i>
                     <span>Gallery</span>
@@ -151,13 +159,6 @@
                 </a>
             </li>
 
-            <li class="sidebar-item  ">
-                <a href="/page/create_user" class='sidebar-link'>
-                    <svg class="svg-inline--fa fa-user-plus fa-w-20 fa-fw select-all" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" data-fa-i2svg=""><path fill="currentColor" d="M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path></svg>
-                    <span>SignUp</span>
-                </a>
-            </li>
-
             <?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true") { ?>
                 <li class="sidebar-item  ">
                     <a href="/logout" class='sidebar-link'>
@@ -166,6 +167,12 @@
                     </a>
                 </li>
             <?php }else{ ?>
+                <li class="sidebar-item  ">
+                    <a href="/page/create_user" class='sidebar-link'>
+                        <svg class="svg-inline--fa fa-user-plus fa-w-20 fa-fw select-all" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" data-fa-i2svg=""><path fill="currentColor" d="M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path></svg>
+                        <span>SignUp</span>
+                    </a>
+                </li>
                 <li class="sidebar-item  ">
                     <a href="/page/login" class='sidebar-link'>
                         <svg class="svg-inline--fa fa-user-lock fa-w-20 fa-fw select-all" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" data-fa-i2svg=""><path fill="currentColor" d="M224 256A128 128 0 1 0 96 128a128 128 0 0 0 128 128zm96 64a63.08 63.08 0 0 1 8.1-30.5c-4.8-.5-9.5-1.5-14.5-1.5h-16.7a174.08 174.08 0 0 1-145.8 0h-16.7A134.43 134.43 0 0 0 0 422.4V464a48 48 0 0 0 48 48h280.9a63.54 63.54 0 0 1-8.9-32zm288-32h-32v-80a80 80 0 0 0-160 0v80h-32a32 32 0 0 0-32 32v160a32 32 0 0 0 32 32h224a32 32 0 0 0 32-32V320a32 32 0 0 0-32-32zM496 432a32 32 0 1 1 32-32 32 32 0 0 1-32 32zm32-144h-64v-80a32 32 0 0 1 64 0z"></path></svg>
@@ -194,7 +201,7 @@
                         <?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true") { ?>
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent" style="justify-content:flex-end;">
-                            <ul id="notificationbell" class="navbar-nav ms-auto mb-lg-0" style="dsplay:none !important;">
+                            <ul id="notificationbell" class="navbar-nav ms-auto mb-lg-0" style="display:none !important;">
                                 <li class="nav-item dropdown me-3">
                                     <a class="nav-link active dropdown-toggle text-gray-600" href="#" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
                                         <i class='bi bi-bell bi-sub fs-4'></i>
@@ -281,14 +288,18 @@
 
     <script>
         function updateTime() {
-            fetch("/updatetime").then(response => response.json()).then(data=>{});
+            fetch("/updatetime").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
+            .then(data=>{})
+            .catch(error=>{
+                window.location.href = `/logout`;
+            });
         }
         updateTime();
         setInterval(updateTime, 15000); //every 15 seconds
     </script>
     <script>
         function myNotifications() {
-            fetch("/getnotifications").then(response => response.json())
+            fetch("/getnotifications").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
             .then(notifications=>{
                 let total = 0;
                 document.getElementById("notificationsid").innerHTML="";
@@ -310,6 +321,9 @@
                 else{
                     document.getElementById("notificationbell").style.display = 'none';
                 }
+            })
+            .catch(error=>{
+                window.location.href = `/logout`;
             });
         }
         myNotifications();
@@ -319,5 +333,28 @@
             form.submit();
         }
     </script>
+    <script>
+        document.getElementById('inputLink').addEventListener('click', function(event) {
+            event.preventDefault();
 
+            Swal.fire({
+                title: 'Room name',
+                input: 'text',
+                animation:false,
+                showCancelButton: true,
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                preConfirm: (value) => {
+                    if (!value) {
+                        Swal.showValidationMessage('Input is required');
+                    }
+                    return value;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/room?room=`+result.value;
+                }
+            });
+        });
+    </script>
 <?php } ?>

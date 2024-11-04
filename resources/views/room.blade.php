@@ -1,21 +1,9 @@
 @include( 'partials.header' )
 
 <?php
-    if((!isset($_SESSION["friendId"]) || $_SESSION["friendId"]=='') && (!isset($friendId) || $friendId==''))
-    { echo '<script>window.location.href = "/page/users?title=Friends";</script>'; exit;}
-    if(isset($friendId) && $friendId!=''){$_SESSION["friendId"]=$friendId;}
-    
-    if((!isset($_SESSION["friendPhoto"]) || $_SESSION["friendPhoto"]=='') && (!isset($friendPhoto) || $friendPhoto==''))
-    { echo '<script>window.location.href = "/page/users?title=Friends";</script>'; exit;}
-    if(isset($friendPhoto) && $friendPhoto!=''){$_SESSION["friendPhoto"]=$friendPhoto;}
-    
     if(isset($perpage) && $perpage!=''){ $_SESSION["perpage"]=$perpage; }
     else{$_SESSION["perpage"]=10;}
     
-    include ("conn.blade.php");
-    mysqli_query ($c, "update conversations set red=1 where users_id_w=".$_SESSION["friendId"]." and users_id_r=".$_SESSION["id"]) ;
-    mysqli_close($c);
-
     if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true"){
         exit("Login !");
     }
@@ -27,10 +15,7 @@
         <div class="row">
             <div class="col-12 col-md-6 order-md-1 order-last">
                 <h3>
-                    Chat Room
-                    <img id="headerphoto" src="/uploads/profiles/<?= $_SESSION["friendPhoto"] ?>" alt="photo<?= $_SESSION["friendId"] ?>">
-                    <span id="active" style="display:none;" class="badge bg-light-success">Active</span>
-                    <span id="inactive" style="display:none;" class="badge bg-light-secondary">Inactive</span>
+                    Group Chat : <span id="roomid">{{$room}}</span>
                 </h3>
             </div>
         </div>
@@ -42,8 +27,8 @@
 <div class="card-body messagesCard" style="padding:10px;">
 <form id="perpageform" method="post" action="/conversations" class="form form-horizontal">
     @csrf
-    <input name="friendId" type="hidden" value="<?= $_SESSION["friendId"] ?>">
-    <input name="friendPhoto" type="hidden" value="<?= $_SESSION["friendPhoto"] ?>">
+    <input name="friendId" type="hidden">
+    <input name="friendPhoto" type="hidden">
 
     <div class="form-body">
         <div style="width:150px; display:flex; align-items:flex-end; margin:auto; ">
@@ -122,9 +107,12 @@ foreach ($rows as $r)
         <textarea rows="2" name="message" id="message1" maxlength="500" class="form-control"></textarea>
     </form>
 
-    <button id="form1btn" class="btn btn-primary btn-lg">
-        <img src="/send.svg" alt="Send" width="24" height="24">
-    </button> 
+        <!-- room -->
+        <button id="form1btn" class="btn btn-primary btn-lg">
+            <img src="/send.svg" alt="Send" width="24" height="24">
+        </button> 
+
+
 </div>
 <script>
     function refresh(){
@@ -171,7 +159,7 @@ foreach ($rows as $r)
             <div class="newmessage oldmessage" style="background-color:white;"></div>
         </div>
         <div width="120">
-            <img class="photo" src="/uploads/profiles/<?= $_SESSION["friendPhoto"] ?>" alt="photo<?= $_SESSION["friendId"] ?>">
+            <img class="photo" src="/uploads/profiles/136.jpg">
         </div>
     </div>
 </div>
@@ -187,73 +175,45 @@ foreach ($rows as $r)
         span.closest('.messagerow').remove();
         fetch('/deleteconversation', { method:'POST', body:formData })
     }
+</script>
 
-    document.getElementById("form1btn").addEventListener("click", function(event) {
-        if (tinymce.get('message1').getContent({format: 'text'}).trim()==""){return;}
-        const messageContent = tinymce.get('message1').getContent();
-        const formData = new FormData();
-        const csrfToken = document.querySelector('input[name="_token"]').value;
-        formData.append('message', messageContent);
-        formData.append('friendId', <?= $_SESSION["friendId"] ?>);
-        formData.append('_token', csrfToken);
-        fetch('/create_conversation', { method:'POST', body:formData })
-        .then(response => response.json())
-        .then(data => { 
-            addMessage(messageContent, document.getElementById("sourcediv1"), data.id);
+
+<!-- room -->
+    <script type="module">
+        import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
+        let socket = io("http://localhost:4000");
+
+        socket.on('connect', ()=>{
+            socket.on('receive', (message, id, photo)=>{
+                if(socket.id==id) { addMessage(message, document.getElementById("sourcediv1"), 0, photo); }
+                else { addMessage(message, photo, document.getElementById("sourcediv2"), 0, photo); }
+            })
+
+            socket.emit('join', "<?= $_SESSION["name"] ?>", "<?= $room ?>", "<?= $_SESSION["photo"] ?>");
+        })
+
+        document.getElementById("form1btn").addEventListener("click", function(event) {
+            if (tinymce.get('message1').getContent({format:'text'}).trim()==""){return;}
+            const messageContent = tinymce.get('message1').getContent();
+            addMessage(messageContent, document.getElementById("sourcediv1"), 0, "<?= $_SESSION["photo"] ?>");
             tinymce.get('message1').setContent('');
-        })
-    });
-
-    function newMessages() {
-        fetch("/getmessages?friendId=<?=$_SESSION["friendId"]?>").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
-        .then(messages=>{
-            for (let id in messages) {
-                addMessage(messages[id], document.getElementById("sourcediv2"), 0);
-            }
-        })
-        .catch(error=>{
-            window.location.href = `/logout`;
+            socket.emit('send', messageContent, "<?= $room ?>", "<?= $_SESSION["photo"] ?>");
         });
-    }
-    setInterval(newMessages, 5000); //every 5 seconds
-then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
-    function addMessage(message, source, id) {
+    </script>
+
+
+<script>
+    function addMessage(message, source, id, photo='136.jpg') {
         const newDiv = document.createElement("div");
         newDiv.innerHTML = source.innerHTML;
         if(id==0)
-        { newDiv.querySelector(".newmessage").innerHTML = message; }
+        { newDiv.querySelector(".newmessage").innerHTML = message; newDiv.querySelector(".photo").src= "/uploads/profiles/"+photo; }
         else{ newDiv.querySelector(".newmessage").innerHTML = message + '<span onclick="deletemessage(this)" data-value="'+id+'" class="delete" >X</span>'; }
         document.getElementById("messages").append(newDiv);
         document.getElementById('noconversations').style.display = 'none';
         window.location.href = "#footer";
         return newDiv;
     }
-
-    function timeDifference(currantTime, oldTime) {
-        const differenceInSeconds = Math.abs(currantTime - oldTime);
-        const differenceInMinutes = differenceInSeconds / 60;
-        return differenceInMinutes;
-    }
-
-    function updateStatus() {
-        fetch("/gettime?q=<?=$_SESSION["friendId"]?>").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
-        .then(response=>{
-            if(timeDifference(response.curranttime, response.oldtime) > 0.5){ //not active if more that half a minute
-                document.getElementById('active').style.display='none';
-                document.getElementById('inactive').style.display='';
-            }
-            else{
-                document.getElementById('active').style.display='';
-                document.getElementById('inactive').style.display='none';
-            }
-        })
-        .catch(error=>{
-            window.location.href = `/logout`;
-        });
-    }
-    updateStatus();
-
-    setInterval(updateStatus, 30000); //every 30 seconds
 </script>
 
 <?php } ?>
