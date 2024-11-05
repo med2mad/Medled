@@ -116,9 +116,9 @@
             </li>
 
             <li class="sidebar-item  ">
-                <a id="inputLink" class='sidebar-link' style="cursor:pointer;">
+                <a id="inputLink" class='sidebar-link' style="cursor:pointer; padding-right:0;">
                     <i class="bi bi-globe-americas"></i>
-                    <span>Group chat : @isset($room) {{$room}} @endisset</span>
+                    <span>Group chat</span>
                 </a>
             </li>
 
@@ -344,9 +344,14 @@
                 showCancelButton: true,
                 confirmButtonText: 'OK',
                 cancelButtonText: 'Cancel',
+                inputAttributes: {
+                    maxlength: 10
+                },
                 preConfirm: (value) => {
                     if (!value) {
-                        Swal.showValidationMessage('Input is required');
+                        Swal.showValidationMessage('Name required !');
+                    } else if (value.length > 10) {
+                        Swal.showValidationMessage('1 to 10 Characters');
                     }
                     return value;
                 }

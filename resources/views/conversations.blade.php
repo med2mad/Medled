@@ -67,7 +67,7 @@
         <div id="messages" class="card-body py-3 messagesCard">
 
 <?php include ("conn.blade.php");
-$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
+$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where room==NULL AND (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
 $d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
 mysqli_close($c);?>
 

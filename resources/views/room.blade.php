@@ -1,5 +1,15 @@
 @include( 'partials.header' )
 
+@isset($room)
+    @if(strlen($room) < 1 && strlen($room) > 10)
+        <script>window.location.href = "/"</script>
+        exit;
+    @endif
+@else
+    <script>window.location.href = "/"</script>
+    exit;
+@endisset
+
 <?php
     if(isset($perpage) && $perpage!=''){ $_SESSION["perpage"]=$perpage; }
     else{$_SESSION["perpage"]=10;}
@@ -52,7 +62,7 @@
         <div id="messages" class="card-body py-3 messagesCard">
 
 <?php include ("conn.blade.php");
-$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
+$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where room<>NULL AND (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
 $d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
 mysqli_close($c);?>
 
@@ -186,7 +196,7 @@ foreach ($rows as $r)
         socket.on('connect', ()=>{
             socket.on('receive', (message, id, photo)=>{
                 if(socket.id==id) { addMessage(message, document.getElementById("sourcediv1"), 0, photo); }
-                else { addMessage(message, photo, document.getElementById("sourcediv2"), 0, photo); }
+                else { addMessage(message, document.getElementById("sourcediv2"), 0, photo); }
             })
 
             socket.emit('join', "<?= $_SESSION["name"] ?>", "<?= $room ?>", "<?= $_SESSION["photo"] ?>");
@@ -197,7 +207,7 @@ foreach ($rows as $r)
             const messageContent = tinymce.get('message1').getContent();
             addMessage(messageContent, document.getElementById("sourcediv1"), 0, "<?= $_SESSION["photo"] ?>");
             tinymce.get('message1').setContent('');
-            socket.emit('send', messageContent, "<?= $room ?>", "<?= $_SESSION["photo"] ?>");
+            socket.emit('send', messageContent);
         });
     </script>
 
