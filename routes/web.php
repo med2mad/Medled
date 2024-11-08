@@ -10,17 +10,21 @@ Route::get('/', function () {
 Route::get('/room', function (Request $request) {
     return view('room', ['room'=>$request->input('room')]);
 });
+Route::get('/chatbot', function (Request $request) {
+    return view('room', ['chatbot'=>1]);
+});
 
 Route::get('/page/{page}', function ($page) {
     return view($page);
 });
 
 Route::post('/conversations', function () {
-    $perpage = 10; $friendPhoto = "136.jpg"; $friendId = -1;
-    if(isset($_POST["perpage"])) {$perpage = $_POST["perpage"];}
-    if(isset($_POST["friendId"])) {$friendId = $_POST["friendId"];}
-    if(isset($_POST["friendPhoto"])) {$friendPhoto = $_POST["friendPhoto"];}
-    return redirect()->route('routename')->with('friendId', $friendId)->with('perpage', $perpage)->with('friendPhoto', $friendPhoto);
+    if (session_id()=="") session_start();
+    $_SESSION["friendPhoto"] = "136.jpg"; $_SESSION["friendId"] = -1; $_SESSION["perpage"]=10;
+    if(isset($_POST["perpage"])) {$_SESSION["perpage"]=$_POST["perpage"];}
+    if(isset($_POST["friendId"])) {$_SESSION["friendId"]=$_POST["friendId"];}
+    if(isset($_POST["friendPhoto"])) {$_SESSION["friendPhoto"]=$_POST["friendPhoto"];}
+    return redirect()->route('routename')->with('friendId', $_SESSION["friendId"])->with('perpage', $_SESSION["perpage"])->with('friendPhoto', $_SESSION["friendPhoto"]);
 });
 Route::get('/form-success', function(){ //Redirect After Post (PRG Pattern)
     return view('conversations', ["friendId"=>session('friendId'), "perpage"=>session('perpage'), "friendPhoto"=>session('friendPhoto')]);

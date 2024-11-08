@@ -10,11 +10,11 @@
 
 <?php 
 include ("conn.blade.php");
-$d=mysqli_query ($c, "select friends from users WHERE id='".$_SESSION["id"]."'");
+$d=mysqli_query ($c, "select friends from users WHERE id<>0 AND id='".$_SESSION["id"]."'");
 $data= mysqli_fetch_array($d);
 $MyfriendsArray = json_decode($data["friends"]?$data["friends"]:'[]', true);
 
-$q = "select count(id) from users where id<>'".$_SESSION["id"]."'";
+$q = "select count(id) from users where id<>0 AND id<>'".$_SESSION["id"]."'";
 $q .= " AND name like '%".$searchName."%'";
 if(isset($_SESSION["type"]) && $_SESSION["type"]=="user") {$q .= " AND blocked = 0";};
 if($_GET["title"]=="Users" && !$include) {
@@ -143,7 +143,7 @@ else{
 <div class="userstable">
              
 <?php include ("conn.blade.php");
-$q = "select * from users where id<>".$_SESSION["id"];
+$q = "select * from users where id<>0 AND id<>".$_SESSION["id"];
 $q .= " AND name like '%".$searchName."%'";
 if(isset($_SESSION["type"]) && $_SESSION["type"]=="user") {$q .= " AND blocked = 0";};
 if($_GET["title"]=="Users" && !$include) {
@@ -253,8 +253,7 @@ while($r= mysqli_fetch_array ($d1))
                 <button type="submit" <?php if(($_SESSION["blocked"]==0 && $is_friend_not_blocking_me) || $imAdmin) { ?> class="btn chatbtn" <?php }else{ ?> class="btn btn-primary disabled chatbtn-disabled" style="background-color:gray;" <?php } ?>>Chat<br>Room</button> 
             </form>
         </div>
-        <?php $_SESSION["select"] .= ','.$r["id"] ?>
-    <?php } ?>
+    <?php $_SESSION["select"] .= ','.$r["id"]; } ?>
 
 </div>
 

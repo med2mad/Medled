@@ -116,7 +116,21 @@
             </li>
 
             <li class="sidebar-item  ">
-                <a id="inputLink" class='sidebar-link' style="cursor:pointer; padding-right:0;">
+                <a href="/page/users?title=Friends" class='sidebar-link'>
+                    <svg width="24px" height="24px" viewBox="0 0 24.00 24.00" fill="currentColor" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.43200000000000005"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5 9.5C5 7.01472 7.01472 5 9.5 5C11.9853 5 14 7.01472 14 9.5C14 11.9853 11.9853 14 9.5 14C7.01472 14 5 11.9853 5 9.5Z" fill="currentColor"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M4.64115 15.6993C5.87351 15.1644 7.49045 15 9.49995 15C11.5112 15 13.1293 15.1647 14.3621 15.7008C15.705 16.2847 16.5212 17.2793 16.949 18.6836C17.1495 19.3418 16.6551 20 15.9738 20H3.02801C2.34589 20 1.85045 19.3408 2.05157 18.6814C2.47994 17.2769 3.29738 16.2826 4.64115 15.6993Z" fill="currentColor"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M21.7071 2.29289C22.0976 2.68342 22.0976 3.31658 21.7071 3.70711L18.2071 7.20711C17.5404 7.87377 16.4596 7.87377 15.7929 7.20711L14.2929 5.70711C13.9024 5.31658 13.9024 4.68342 14.2929 4.29289C14.6834 3.90237 15.3166 3.90237 15.7071 4.29289L17 5.58579L20.2929 2.29289C20.6834 1.90237 21.3166 1.90237 21.7071 2.29289Z" fill="currentColor"></path> </g></svg>
+                    <span>Friends</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item  ">
+                <a id="chatbot" style="cursor:pointer;" class='sidebar-link'>
+                    <i class="bi bi-robot"></i>
+                    <span>Chat with chatbot</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item  ">
+                <a id="groupid" style="cursor:pointer; padding-right:0;" class='sidebar-link'>
                     <i class="bi bi-globe-americas"></i>
                     <span>Group chat</span>
                 </a>
@@ -126,13 +140,6 @@
                 <a href="/page/gallery?user=<?= $_SESSION["id"] ?>" class='sidebar-link'>
                     <i class="bi bi-image-fill"></i>
                     <span>Gallery</span>
-                </a>
-            </li>
-
-            <li class="sidebar-item  ">
-                <a href="/page/users?title=Friends" class='sidebar-link'>
-                    <svg width="24px" height="24px" viewBox="0 0 24.00 24.00" fill="currentColor" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.43200000000000005"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M5 9.5C5 7.01472 7.01472 5 9.5 5C11.9853 5 14 7.01472 14 9.5C14 11.9853 11.9853 14 9.5 14C7.01472 14 5 11.9853 5 9.5Z" fill="currentColor"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M4.64115 15.6993C5.87351 15.1644 7.49045 15 9.49995 15C11.5112 15 13.1293 15.1647 14.3621 15.7008C15.705 16.2847 16.5212 17.2793 16.949 18.6836C17.1495 19.3418 16.6551 20 15.9738 20H3.02801C2.34589 20 1.85045 19.3408 2.05157 18.6814C2.47994 17.2769 3.29738 16.2826 4.64115 15.6993Z" fill="currentColor"></path> <path fill-rule="evenodd" clip-rule="evenodd" d="M21.7071 2.29289C22.0976 2.68342 22.0976 3.31658 21.7071 3.70711L18.2071 7.20711C17.5404 7.87377 16.4596 7.87377 15.7929 7.20711L14.2929 5.70711C13.9024 5.31658 13.9024 4.68342 14.2929 4.29289C14.6834 3.90237 15.3166 3.90237 15.7071 4.29289L17 5.58579L20.2929 2.29289C20.6834 1.90237 21.3166 1.90237 21.7071 2.29289Z" fill="currentColor"></path> </g></svg>
-                    <span>Friends</span>
                 </a>
             </li>
 
@@ -158,15 +165,8 @@
                     <span>Contacts</span>
                 </a>
             </li>
-
-            <?php if(isset($_SESSION["auth"]) && $_SESSION["auth"]=="true") { ?>
-                <li class="sidebar-item  ">
-                    <a href="/logout" class='sidebar-link'>
-                        <i class="icon-mid bi bi-box-arrow-left me-2"></i>
-                        <span>Logout</span>
-                    </a>
-                </li>
-            <?php }else{ ?>
+            
+            <?php if(!isset($_SESSION["auth"]) || $_SESSION["auth"]!="true") { ?>
                 <li class="sidebar-item  ">
                     <a href="/page/create_user" class='sidebar-link'>
                         <svg class="svg-inline--fa fa-user-plus fa-w-20 fa-fw select-all" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="user-plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" data-fa-i2svg=""><path fill="currentColor" d="M624 208h-64v-64c0-8.8-7.2-16-16-16h-32c-8.8 0-16 7.2-16 16v64h-64c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h64v64c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16v-64h64c8.8 0 16-7.2 16-16v-32c0-8.8-7.2-16-16-16zm-400 48c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"></path></svg>
@@ -334,31 +334,38 @@
         }
     </script>
     <script>
-        document.getElementById('inputLink').addEventListener('click', function(event) {
-            event.preventDefault();
+        document.addEventListener('DOMContentLoaded',()=>{
+            document.getElementById('groupid').addEventListener('click', function(event) {
+                event.preventDefault();
 
-            Swal.fire({
-                title: 'Room name',
-                input: 'text',
-                animation:false,
-                showCancelButton: true,
-                confirmButtonText: 'OK',
-                cancelButtonText: 'Cancel',
-                inputAttributes: {
-                    maxlength: 10
-                },
-                preConfirm: (value) => {
-                    if (!value) {
-                        Swal.showValidationMessage('Name required !');
-                    } else if (value.length > 10) {
-                        Swal.showValidationMessage('1 to 10 Characters');
+                Swal.fire({
+                    title: 'Room name',
+                    input: 'text',
+                    animation:false,
+                    showCancelButton: true,
+                    confirmButtonText: 'OK',
+                    cancelButtonText: 'Cancel',
+                    inputAttributes: {
+                        maxlength: 10
+                    },
+                    preConfirm: (value) => {
+                        if (!value) {
+                            Swal.showValidationMessage('Name required !');
+                        } else if (value.length > 10) {
+                            Swal.showValidationMessage('1 to 10 Characters');
+                        }
+                        return value;
                     }
-                    return value;
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `/room?room=`+result.value;
-                }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/room?room=`+result.value;
+                    }
+                });
+            });
+
+            document.getElementById('chatbot').addEventListener('click', function(event) {
+                event.preventDefault();
+                window.location.href = `/chatbot`;
             });
         });
     </script>

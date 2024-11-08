@@ -1,17 +1,12 @@
 @include( 'partials.header' )
 
 <?php
-    if((!isset($_SESSION["friendId"]) || $_SESSION["friendId"]=='') && (!isset($friendId) || $friendId==''))
+    if(!isset($_SESSION["friendId"]) || $_SESSION["friendId"]==-1)
     { echo '<script>window.location.href = "/page/users?title=Friends";</script>'; exit;}
-    if(isset($friendId) && $friendId!=''){$_SESSION["friendId"]=$friendId;}
     
-    if((!isset($_SESSION["friendPhoto"]) || $_SESSION["friendPhoto"]=='') && (!isset($friendPhoto) || $friendPhoto==''))
+    if(!isset($_SESSION["friendPhoto"]) || $_SESSION["friendPhoto"]=='')
     { echo '<script>window.location.href = "/page/users?title=Friends";</script>'; exit;}
-    if(isset($friendPhoto) && $friendPhoto!=''){$_SESSION["friendPhoto"]=$friendPhoto;}
-    
-    if(isset($perpage) && $perpage!=''){ $_SESSION["perpage"]=$perpage; }
-    else{$_SESSION["perpage"]=10;}
-    
+
     include ("conn.blade.php");
     mysqli_query ($c, "update conversations set red=1 where users_id_w=".$_SESSION["friendId"]." and users_id_r=".$_SESSION["id"]) ;
     mysqli_close($c);
@@ -29,8 +24,10 @@
                 <h3>
                     Chat Room
                     <img id="headerphoto" src="/uploads/profiles/<?= $_SESSION["friendPhoto"] ?>" alt="photo<?= $_SESSION["friendId"] ?>">
-                    <span id="active" style="display:none;" class="badge bg-light-success">Active</span>
-                    <span id="inactive" style="display:none;" class="badge bg-light-secondary">Inactive</span>
+                    <?php if(isset($_SESSION["friendId"]) && $_SESSION["friendId"]!=0) { ?>
+                        <span id="active" style="display:none;" class="badge bg-light-success">Active</span>
+                        <span id="inactive" style="display:none;" class="badge bg-light-secondary">Inactive</span>
+                    <?php } ?>
                 </h3>
             </div>
         </div>
@@ -67,7 +64,7 @@
         <div id="messages" class="card-body py-3 messagesCard">
 
 <?php include ("conn.blade.php");
-$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where room==NULL AND (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
+$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where room=NULL AND (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
 $d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
 mysqli_close($c);?>
 
@@ -216,7 +213,7 @@ foreach ($rows as $r)
         });
     }
     setInterval(newMessages, 5000); //every 5 seconds
-then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
+
     function addMessage(message, source, id) {
         const newDiv = document.createElement("div");
         newDiv.innerHTML = source.innerHTML;
@@ -234,26 +231,27 @@ then(response => { if(!response.ok)throw new Error('login'); return response.jso
         const differenceInMinutes = differenceInSeconds / 60;
         return differenceInMinutes;
     }
+    <?php if(isset($_SESSION["friendId"]) && $_SESSION["friendId"]!=0) { ?>
+        function updateStatus() {
+            fetch("/gettime?q=<?=$_SESSION["friendId"]?>").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
+            .then(response=>{
+                if(timeDifference(response.curranttime, response.oldtime) > 0.5){ //not active if more that half a minute
+                    document.getElementById('active').style.display='none';
+                    document.getElementById('inactive').style.display='';
+                }
+                else{
+                    document.getElementById('active').style.display='';
+                    document.getElementById('inactive').style.display='none';
+                }
+            })
+            .catch(error=>{
+                window.location.href = `/logout`;
+            });
+        }
+        updateStatus();
 
-    function updateStatus() {
-        fetch("/gettime?q=<?=$_SESSION["friendId"]?>").then(response => { if(!response.ok)throw new Error('login'); return response.json(); })
-        .then(response=>{
-            if(timeDifference(response.curranttime, response.oldtime) > 0.5){ //not active if more that half a minute
-                document.getElementById('active').style.display='none';
-                document.getElementById('inactive').style.display='';
-            }
-            else{
-                document.getElementById('active').style.display='';
-                document.getElementById('inactive').style.display='none';
-            }
-        })
-        .catch(error=>{
-            window.location.href = `/logout`;
-        });
-    }
-    updateStatus();
-
-    setInterval(updateStatus, 30000); //every 30 seconds
+        setInterval(updateStatus, 30000); //every 30 seconds
+    <?php } ?>
 </script>
 
 <?php } ?>
