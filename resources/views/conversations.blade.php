@@ -64,7 +64,7 @@
         <div id="messages" class="card-body py-3 messagesCard">
 
 <?php include ("conn.blade.php");
-$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where room=NULL AND (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].")";
+$q = "select id, users_id_w, users_name_w, users_img_w, message from conversations where room=NULL AND (users_id_w = ".$_SESSION["id"]." OR users_id_r = ".$_SESSION["id"].") AND (users_id_w = ".$_SESSION["friendId"]." OR users_id_r = ".$_SESSION["friendId"].") AND users_id_w <> 0 AND users_id_r <> 0";
 $d = mysqli_query ($c, $q." ORDER BY id DESC LIMIT ".$_SESSION["perpage"]);
 mysqli_close($c);?>
 
@@ -193,11 +193,17 @@ foreach ($rows as $r)
         formData.append('message', messageContent);
         formData.append('friendId', <?= $_SESSION["friendId"] ?>);
         formData.append('_token', csrfToken);
+        const div = addMessage(messageContent, document.getElementById("sourcediv1"),0); //message id, instead of 0
+        tinymce.get('message1').setContent('');
         fetch('/create_conversation', { method:'POST', body:formData })
         .then(response => response.json())
-        .then(data => { 
-            addMessage(messageContent, document.getElementById("sourcediv1"), data.id);
-            tinymce.get('message1').setContent('');
+        .then( ()=>{ 
+            <?php if($_SESSION["friendId"]==0){ ?>
+                fetch('http://localhost:5000/?message='+div.innerText).then(response => response.json())
+                .then(data => { 
+                    addMessage(data.answer, document.getElementById("sourcediv2"), 0);
+                })
+            <?php } ?>
         })
     });
 

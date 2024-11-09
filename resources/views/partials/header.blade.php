@@ -57,7 +57,6 @@
         .userstatusactive{
             background-color: #edfff6 !important;
         }
-        
     </style>
 </head>
 
@@ -125,7 +124,7 @@
             <li class="sidebar-item  ">
                 <a id="chatbot" style="cursor:pointer;" class='sidebar-link'>
                     <i class="bi bi-robot"></i>
-                    <span>Chat with chatbot</span>
+                    <span>ChatBot</span>
                 </a>
             </li>
 
@@ -365,7 +364,31 @@
 
             document.getElementById('chatbot').addEventListener('click', function(event) {
                 event.preventDefault();
-                window.location.href = `/chatbot`;
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/conversations';
+
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                form.appendChild(csrfInput);
+
+                const friendIdInput = document.createElement('input');
+                friendIdInput.type = 'hidden';
+                friendIdInput.name = 'friendId';
+                friendIdInput.value = '0';
+                form.appendChild(friendIdInput);
+
+                const friendPhotoInput = document.createElement('input');
+                friendPhotoInput.type = 'hidden';
+                friendPhotoInput.name = 'friendPhoto';
+                friendPhotoInput.value = 'medled.png';
+                form.appendChild(friendPhotoInput);
+
+                document.body.appendChild(form);
+                form.submit();
             });
         });
     </script>

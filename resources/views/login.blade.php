@@ -20,6 +20,9 @@
         .auth-logo img{
             height: 3rem !important;
         }
+        .auth-title{
+            text-align: center !important;
+        }
     </style>
 </head>
 

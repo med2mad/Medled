@@ -1,19 +1,14 @@
 @include( 'partials.header' )
 
-<?php
-    if(!isset($room) && !isset($chatbot)) {
-        echo '<script>window.location.href = "/"; exit;</script>';
-    }
-    if(isset($room) && (strlen($room)< 1 || strlen($room) > 10)) {
-        echo '<script>window.location.href = "/"; exit;</script>';
-    }
-    if(isset($chatbot) && $chatbot==1) {
-        $_SESSION["emit"] = 'sendbot';
-    }
-    else {
-        $_SESSION["emit"] = 'send';
-    }
-?>
+@isset($room)
+    @if(strlen($room) < 1 && strlen($room) > 10)
+        <script>window.location.href = "/"</script>
+        exit;
+    @endif
+@else
+    <script>window.location.href = "/"</script>
+    exit;
+@endisset
 
 <?php
     if(isset($perpage) && $perpage!=''){ $_SESSION["perpage"]=$perpage; }
@@ -212,7 +207,7 @@ foreach ($rows as $r)
             const messageContent = tinymce.get('message1').getContent();
             addMessage(messageContent, document.getElementById("sourcediv1"), 0, "<?= $_SESSION["photo"] ?>");
             tinymce.get('message1').setContent('');
-            socket.emit('<?= $_SESSION["emit"] ?>', messageContent);
+            socket.emit('send', messageContent);
         });
     </script>
 

@@ -37,6 +37,9 @@ if (session_id()=="") session_start();
             background-color: black;
             border-radius: 50%;
         }
+        .auth-title{
+            text-align: center !important;
+        }
     </style>
 </head>
 
