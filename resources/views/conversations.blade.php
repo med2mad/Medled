@@ -199,7 +199,7 @@ foreach ($rows as $r)
         .then(response => response.json())
         .then( ()=>{ 
             <?php if($_SESSION["friendId"]==0){ ?>
-                fetch('http://localhost:5000/?message='+div.innerText).then(response => response.json())
+                fetch('http://localhost:5000/?message='+div.innerText.trim()).then(response => response.json())
                 .then(data => { 
                     addMessage(data.answer, document.getElementById("sourcediv2"), 0);
                 })
