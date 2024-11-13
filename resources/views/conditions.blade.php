@@ -7,7 +7,7 @@
 </p>
 <div>
     <div class="terms">
-        - You can use the "MedLed social" platform however you like.</td>
+        - You can use the "MedLed" platform however you like.</td>
     </div>
     <div class="terms">
         - You are responsible for keeping your login informations secure.

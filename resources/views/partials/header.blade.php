@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedLed Social</title>
+    <title>MedLed</title>
     <link rel="icon" href="/assets/compiled/png/favicon.png" type="image/png">
     <link rel="stylesheet" href="/assets/extensions/filepond/filepond.css">
     <link rel="stylesheet" href="/assets/extensions/filepond-plugin-image-preview/filepond-plugin-image-preview.css">

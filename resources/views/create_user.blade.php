@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medled social, signup</title>
+    <title>Medled, signup</title>
     <link rel="icon" href="/assets/compiled/png/favicon.png" type="image/png">
     <link rel="stylesheet" href="/assets/compiled/css/app.css">
     <link rel="stylesheet" href="/assets/compiled/css/app-dark.css">
@@ -43,7 +43,10 @@
     <div class="col-lg-5 col-12" style="margin:auto;">
         <div id="auth-left">
             <div class="auth-logo">
-                <a href="/"><img src="/assets/static/images/logo/logo.png" alt="Logo"></a>
+                <a href="/">
+                    <i class="bi bi-arrow-left-circle-fill" style="font-size:2rem;"></i>
+                    <img src="/assets/static/images/logo/logo.png" alt="Logo">
+                </a>
             </div>
             <h1 class="auth-title">Sign Up</h1>
 
