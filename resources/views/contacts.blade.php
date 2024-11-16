@@ -112,7 +112,7 @@
           <div class="">
             <h2 class="mb-4 mt-4 section-title">About Me</h2>
             <p>
-              "Mohamed Leghdaich", a programmer and web designed. Builder of the "Medled" platform.<br>
+              "Mohamed LEGHDAICH", a programmer and web designer. Builder of the "Medled" platform.<br>
               If interested in my web developpement services, or for collaboration, or just to hang out and have a chat, please leave a message.
             </p>
           </div>
